@@ -1,0 +1,18 @@
+version: "3"
+
+services:
+  thor-solo:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: thor-solo
+    entrypoint: /bin/sh
+    command:
+      - '-c'
+      - 'thor solo --api-addr 0.0.0.0:8669 --api-cors "*" --on-demand'
+    ports:
+      - "8669:8669"
+    healthcheck:
+      test: curl --fail 0.0.0.0:8669/blocks/0 || exit 1
+      interval: "2s"
+      retries: 30
