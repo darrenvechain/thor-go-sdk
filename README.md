@@ -13,7 +13,7 @@ The Thor GO SDK is built on top of the latest version of [geth](https://github.c
 To install the Thor GO SDK, run the following command:
 
 ```bash
-go get github.com/darnevechain/thor-go-sdk
+go get github.com/darrenvechain/thor-go-sdk
 ```
 
 ## Examples
@@ -23,8 +23,8 @@ package main
 
 import (
 	"fmt"
-	"github.com/darnevechain/thor-go-sdk/thorgo"
-	"github.com/darnevechain/thor-go-sdk/solo"
+	"github.com/darrenvechain/thor-go-sdk/thorgo"
+	"github.com/darrenvechain/thor-go-sdk/solo"
 	"github.com/ethereum/go-ethereum/common"
 )
 
