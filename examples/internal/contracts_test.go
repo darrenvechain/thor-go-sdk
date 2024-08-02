@@ -49,7 +49,7 @@ func TestContractWrite(t *testing.T) {
 	assert.NoError(t, err)
 	values, _ := result.([]interface{})
 
-	// transfer half 60% of the balance to account2
+	// transfer 60% of the balance to account2
 	amount, ok := values[0].(*big.Int)
 	assert.True(t, ok)
 	transferAmount := amount.Mul(amount, big.NewInt(60)).Div(amount, big.NewInt(100))
