@@ -1,8 +1,6 @@
 package transactions
 
 import (
-	"math/rand"
-
 	"github.com/darrenvechain/thor-go-sdk/client"
 	"github.com/darrenvechain/thor-go-sdk/transaction"
 	"github.com/ethereum/go-ethereum/common"
@@ -152,7 +150,7 @@ func (tx *Builder) Build() (*transaction.Transaction, error) {
 
 	// Set nonce
 	if unsanitized.Nonce() == 0 {
-		builder.Nonce(rand.Uint64())
+		builder.Nonce(transaction.Nonce())
 	} else {
 		builder.Nonce(unsanitized.Nonce())
 	}

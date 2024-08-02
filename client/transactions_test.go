@@ -2,7 +2,6 @@ package client
 
 import (
 	"math/big"
-	"math/rand"
 	"testing"
 
 	"github.com/darrenvechain/thor-go-sdk/solo"
@@ -27,7 +26,7 @@ func TestClient_SendTransaction(t *testing.T) {
 		ChainTag(client.ChainTag()).
 		Expiration(100000000).
 		BlockRef(transaction.NewBlockRef(0)).
-		Nonce(rand.Uint64()).
+		Nonce(transaction.Nonce()).
 		Clause(vetClause).
 		Build()
 

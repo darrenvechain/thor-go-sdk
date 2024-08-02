@@ -32,3 +32,6 @@ lint_command_check:
 
 lint: | go_version_check lint_command_check #@ Run 'golangci-lint'
 	@golangci-lint run --config .golangci.yml
+
+lint-fix: | go_version_check lint_command_check #@ Run 'golangci-lint' with fix
+	@golangci-lint run --config .golangci.yml --fix
