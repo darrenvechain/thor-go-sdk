@@ -1,8 +1,9 @@
 package thorgo
 
 import (
-	"github.com/darrenvechain/thor-go-sdk/client"
 	"testing"
+
+	"github.com/darrenvechain/thor-go-sdk/client"
 
 	"github.com/darrenvechain/thor-go-sdk/solo"
 	"github.com/ethereum/go-ethereum/common"

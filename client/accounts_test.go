@@ -1,13 +1,14 @@
 package client
 
 import (
+	"math/big"
+	"strings"
+	"testing"
+
 	"github.com/darrenvechain/thor-go-sdk/hex"
 	"github.com/darrenvechain/thor-go-sdk/solo"
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/stretchr/testify/assert"
-	"math/big"
-	"strings"
-	"testing"
 )
 
 func TestClient_Account(t *testing.T) {

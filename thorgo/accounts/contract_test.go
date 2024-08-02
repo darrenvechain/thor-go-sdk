@@ -1,15 +1,16 @@
 package accounts
 
 import (
+	"math/big"
+	"strings"
+	"testing"
+
 	"github.com/darrenvechain/thor-go-sdk/client"
 	"github.com/darrenvechain/thor-go-sdk/solo"
 	"github.com/ethereum/go-ethereum/accounts/abi"
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/crypto"
 	"github.com/stretchr/testify/assert"
-	"math/big"
-	"strings"
-	"testing"
 )
 
 var thorClient *client.Client

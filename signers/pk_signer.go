@@ -2,6 +2,7 @@ package signers
 
 import (
 	"crypto/ecdsa"
+
 	"github.com/darrenvechain/thor-go-sdk/thorgo"
 	"github.com/darrenvechain/thor-go-sdk/thorgo/transactions"
 	"github.com/darrenvechain/thor-go-sdk/transaction"

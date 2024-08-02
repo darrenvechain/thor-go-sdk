@@ -1,13 +1,14 @@
 package transactions
 
 import (
+	"math/big"
+	"testing"
+
 	"github.com/darrenvechain/thor-go-sdk/client"
 	"github.com/darrenvechain/thor-go-sdk/solo"
 	"github.com/darrenvechain/thor-go-sdk/transaction"
 	"github.com/ethereum/go-ethereum/crypto"
 	"github.com/stretchr/testify/assert"
-	"math/big"
-	"testing"
 )
 
 var thorClient *client.Client

@@ -1,9 +1,10 @@
 package client
 
 import (
+	"testing"
+
 	"github.com/darrenvechain/thor-go-sdk/solo"
 	"github.com/stretchr/testify/assert"
-	"testing"
 )
 
 func TestClient_Block(t *testing.T) {
