@@ -18,7 +18,7 @@ go_version_check:
 	fi
 
 thor_solo:| #@ Start a thor solo node if it's not running
-	@docker-compose up -d --wait
+	@docker compose up -d --wait
 
 test:| go_version_check thor_solo #@ Run the tests
 	@go test -cover $(PACKAGES)
