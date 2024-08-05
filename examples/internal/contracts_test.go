@@ -1,21 +1,27 @@
 package internal
 
 import (
-	"github.com/darrenvechain/thor-go-sdk/signers"
-	"github.com/darrenvechain/thor-go-sdk/transaction"
-	"github.com/ethereum/go-ethereum/accounts/abi"
-	"github.com/ethereum/go-ethereum/common"
-	"github.com/stretchr/testify/assert"
 	"math/big"
 	"strings"
 	"testing"
+
+	"github.com/darrenvechain/thor-go-sdk/thorgo/accounts"
+	"github.com/darrenvechain/thor-go-sdk/txmanager"
+	"github.com/ethereum/go-ethereum/accounts/abi"
+	"github.com/stretchr/testify/assert"
 )
 
-func TestContractRead(t *testing.T) {
-	vthoABI, err := abi.JSON(strings.NewReader(erc20ABI))
-	assert.NoError(t, err)
-	vtho := thor.Account(common.HexToAddress("0x0000000000000000000000000000456e65726779")).Contract(vthoABI)
+var (
+	vthoABI abi.ABI
+	vtho    *accounts.Contract
+)
 
+func init() {
+	vthoABI, _ = abi.JSON(strings.NewReader(erc20ABI))
+	vtho = thor.Account(vthoAddr).Contract(vthoABI)
+}
+
+func TestContractRead(t *testing.T) {
 	// name
 	result, err := vtho.Call("name")
 	assert.NoError(t, err)
@@ -33,15 +39,9 @@ func TestContractRead(t *testing.T) {
 	assert.Equal(t, uint8(18), values[0])
 }
 
-func TestContractWrite(t *testing.T) {
-	// construct contract
-	vthoABI, err := abi.JSON(strings.NewReader(erc20ABI))
-	assert.NoError(t, err)
-	vtho := thor.Account(common.HexToAddress("0x0000000000000000000000000000456e65726779")).Contract(vthoABI)
-
+func TestContractClause(t *testing.T) {
 	// construct accounts
-	sender := signers.FromPK(account1, thor)
-	receiver, err := signers.GeneratePK(thor)
+	receiver, err := txmanager.GeneratePK()
 	assert.NoError(t, err)
 
 	// balanceOf - 1
@@ -57,104 +57,134 @@ func TestContractWrite(t *testing.T) {
 	// transfer clause
 	clause, err := vtho.AsClause("transfer", receiver.Address(), transferAmount)
 	assert.NoError(t, err)
-	tx, err := sender.SendClauses([]*transaction.Clause{clause})
 	assert.NoError(t, err)
 
-	// wait for the receipt
+	// decoded
+	decoded, err := vthoABI.Unpack("transfer", clause.Data())
+	assert.NoError(t, err)
+	assert.Equal(t, receiver.Address().Hex(), decoded[0].(string))
+	assert.Equal(t, transferAmount, decoded[1].(*big.Int))
+}
+
+func TestContractSend(t *testing.T) {
+	signer := txmanager.FromPK(account1)
+	receiver, err := txmanager.GeneratePK()
+	assert.NoError(t, err)
+
+	tx, err := vtho.Send(signer, "transfer", receiver.Address(), big.NewInt(1000))
+	assert.NoError(t, err)
+
 	receipt, err := tx.Wait()
 	assert.NoError(t, err)
-	assert.False(t, receipt.Reverted)
 
-	// balanceOf - 2
-	result, err = vtho.Call("balanceOf", receiver.Address())
-	assert.NoError(t, err)
-	values, _ = result.([]interface{})
-	assert.Equal(t, transferAmount, values[0])
+	assert.False(t, receipt.Reverted)
 }
 
 const erc20ABI = `[
-	{
-		"constant":true,
-		"inputs":[],
-		"name":"name",
-		"outputs":[
-			{
-				"name":"",	
-				"type":"string"
-			}
-		],
-		"payable":false,
-		"stateMutability":"view",
-		"type":"function"
-	},
-	{
-		"constant":true,
-		"inputs":[],
-		"name":"symbol",
-		"outputs":[
-			{
-				"name":"",
-				"type":"string"
-			}
-		],	
-		"payable":false,
-		"stateMutability":"view",
-		"type":"function"
-	},
-	{
-		"constant":true,
-		"inputs":[],
-		"name":"decimals",	
-		"outputs":[	
-			{
-				"name":"",	
-				"type":"uint8"
-			}	
-		],		
-		"payable":false,	
-		"stateMutability":"view",
-		"type":"function"	
-	},
-	{
-		"constant":false,
-		"inputs":[
-			{
-				"name":"_to",
-				"type":"address"
-			},
-			{
-				"name":"_value",
-				"type":"uint256"
-			}
-		],
-		"name":"transfer",
-		"outputs":[
-			{
-				"name":"",
-				"type":"bool"
-			}
-		],
-		"payable":false,
-		"stateMutability":"nonpayable",
-		"type":"function"
-	},
-	{
-		"constant":true,
-		"name":"balanceOf",
-		"inputs":[
-			{
-				"name":"_owner",
-				"type":"address"
-			}
-		],
-		"outputs":[
-			{
-				"name":"",
-				"type":"uint256"
-			}
-		],
-		"payable":false,
-		"stateMutability":"view",
-		"type":"function"
-	}
+    {
+        "constant":true,
+        "inputs":[],
+        "name":"name",
+        "outputs":[
+            {
+                "name":"",
+                "type":"string"
+            }
+        ],
+        "payable":false,
+        "stateMutability":"view",
+        "type":"function"
+    },
+    {
+        "constant":true,
+        "inputs":[],
+        "name":"symbol",
+        "outputs":[
+            {
+                "name":"",
+                "type":"string"
+            }
+        ],
+        "payable":false,
+        "stateMutability":"view",
+        "type":"function"
+    },
+    {
+        "constant":true,
+        "inputs":[],
+        "name":"decimals",
+        "outputs":[
+            {
+                "name":"",
+                "type":"uint8"
+            }
+        ],
+        "payable":false,
+        "stateMutability":"view",
+        "type":"function"
+    },
+    {
+        "constant":false,
+        "inputs":[
+            {
+                "name":"to",
+                "type":"address"
+            },
+            {
+                "name":"value",
+                "type":"uint256"
+            }
+        ],
+        "name":"transfer",
+        "outputs":[
+            {
+                "name":"",
+                "type":"bool"
+            }
+        ],
+        "payable":false,
+        "stateMutability":"nonpayable",
+        "type":"function"
+    },
+    {
+        "constant":true,
+        "name":"balanceOf",
+        "inputs":[
+            {
+                "name":"owner",
+                "type":"address"
+            }
+        ],
+        "outputs":[
+            {
+                "name":"",
+                "type":"uint256"
+            }
+        ],
+        "payable":false,
+        "stateMutability":"view",
+        "type":"function"
+    },
+    {
+        "anonymous":false,
+        "inputs":[
+            {
+                "indexed":true,
+                "name":"from",
+                "type":"address"
+            },
+            {
+                "indexed":true,
+                "name":"to",
+                "type":"address"
+            },
+            {
+                "indexed":false,
+                "name":"value",
+                "type":"uint256"
+            }
+        ],
+        "name":"Transfer",
+        "type":"event"
+    }
 ]`

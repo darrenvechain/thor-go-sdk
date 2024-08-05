@@ -36,7 +36,6 @@ func (b *Block) BlockRef() transaction.BlockRef {
 }
 
 type BlockTransaction struct {
-	Block
 	ID           common.Hash          `json:"id"`
 	ChainTag     byte                 `json:"chainTag"`
 	BlockRef     transaction.BlockRef `json:"blockRef"`

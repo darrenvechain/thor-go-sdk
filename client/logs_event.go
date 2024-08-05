@@ -20,5 +20,8 @@ type EventFilter struct {
 
 type EventCriteria struct {
 	Address *common.Address `json:"address,omitempty"`
-	Topics  *[]common.Hash  `json:"topics,omitempty"`
+	Topic0  *common.Hash    `json:"topic0,omitempty"`
+	Topic1  *common.Hash    `json:"topic1,omitempty"`
+	Topic2  *common.Hash    `json:"topic2,omitempty"`
+	Topic3  *common.Hash    `json:"topic3,omitempty"`
 }

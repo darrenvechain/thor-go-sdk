@@ -13,6 +13,8 @@ var (
 	account1Addr = crypto.PubkeyToAddress(account1.PublicKey)
 	account2, _  = solo.Key(1)
 	account2Addr = crypto.PubkeyToAddress(account2.PublicKey)
+	account3, _  = solo.Key(2)
+	account3Addr = crypto.PubkeyToAddress(account3.PublicKey)
 	vthoAddr     = common.HexToAddress("0x0000000000000000000000000000456e65726779")
 )
 

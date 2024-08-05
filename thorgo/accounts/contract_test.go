@@ -13,7 +13,11 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-var thorClient *client.Client
+var (
+	thorClient *client.Client
+	vthoAddr   = common.HexToAddress("0x0000000000000000000000000000456E65726779")
+	vtho       *Contract
+)
 
 func init() {
 	var err error
@@ -21,12 +25,11 @@ func init() {
 	if err != nil {
 		panic(err)
 	}
+	vthoABI, _ := abi.JSON(strings.NewReader(erc20ABI))
+	vtho = New(thorClient, vthoAddr).Contract(vthoABI)
 }
 
 func TestContractCall(t *testing.T) {
-	vthoABI, _ := abi.JSON(strings.NewReader(erc20ABI))
-	vtho := New(thorClient, common.HexToAddress("0x0000000000000000000000000000456E65726779")).Contract(vthoABI)
-
 	// name
 	result, err := vtho.Call("name")
 	assert.NoError(t, err)
@@ -45,11 +48,7 @@ func TestContractCall(t *testing.T) {
 }
 
 func TestContractClause(t *testing.T) {
-	vthoABI, _ := abi.JSON(strings.NewReader(erc20ABI))
-	vthoAddr := common.HexToAddress("0x0000000000000000000000000000456E65726779")
-	vtho := New(thorClient, vthoAddr).Contract(vthoABI)
-
-	// account 2
+	// address 2
 	account2, _ := solo.Key(1)
 	account2Addr := crypto.PubkeyToAddress(account2.PublicKey)
 
