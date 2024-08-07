@@ -55,7 +55,7 @@ func (f *Filter) TimeRange(from uint64, to uint64) *Filter {
 }
 
 // Apply sends the transfer filter to the node and returns the results.
-func (f *Filter) Apply(offset uint64, limit uint64) (*[]client.TransferLog, error) {
+func (f *Filter) Apply(offset uint64, limit uint64) ([]client.TransferLog, error) {
 	if limit > 256 {
 		return nil, errors.New("limit must be less than or equal to 256")
 	}

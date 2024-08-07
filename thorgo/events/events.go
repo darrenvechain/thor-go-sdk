@@ -52,7 +52,7 @@ func (f *Filter) TimeRange(from uint64, to uint64) *Filter {
 	return f
 }
 
-func (f *Filter) Apply(offset uint64, limit uint64) (*[]client.EventLog, error) {
+func (f *Filter) Apply(offset uint64, limit uint64) ([]client.EventLog, error) {
 	if limit > 256 {
 		return nil, errors.New("limit must be less than or equal to 256")
 	}

@@ -58,9 +58,13 @@ func (c *Client) AccountForRevision(addr common.Address, revision common.Hash) (
 // This can be used to:
 // - Read contract(s) state
 // - Simulate the execution of a transaction
-func (c *Client) Inspect(body InspectRequest) (*[]InspectResponse, error) {
+func (c *Client) Inspect(body InspectRequest) ([]InspectResponse, error) {
 	url := "/accounts/*"
-	return Post(c, url, body, new([]InspectResponse))
+	result, err := Post(c, url, body, new([]InspectResponse))
+	if err != nil {
+		return nil, err
+	}
+	return *result, nil
 }
 
 // AccountCode fetches the code for the account at the given address.
@@ -159,18 +163,30 @@ func (c *Client) TransactionReceipt(id common.Hash) (*TransactionReceipt, error)
 	return Get(c, url, new(TransactionReceipt))
 }
 
-func (c *Client) FilterEvents(filter *EventFilter) (*[]EventLog, error) {
+func (c *Client) FilterEvents(filter *EventFilter) ([]EventLog, error) {
 	path := "/logs/event"
-	return Post(c, path, filter, new([]EventLog))
+	result, err := Post(c, path, filter, new([]EventLog))
+	if err != nil {
+		return nil, err
+	}
+	return *result, nil
 }
 
-func (c *Client) FilterTransfers(filter *TransferFilter) (*[]TransferLog, error) {
+func (c *Client) FilterTransfers(filter *TransferFilter) ([]TransferLog, error) {
 	path := "/logs/transfer"
-	return Post(c, path, filter, new([]TransferLog))
+	result, err := Post(c, path, filter, new([]TransferLog))
+	if err != nil {
+		return nil, err
+	}
+	return *result, nil
 }
 
-func (c *Client) Peers() (*[]Peer, error) {
-	return Get(c, "/node/network/peers", new([]Peer))
+func (c *Client) Peers() ([]Peer, error) {
+	result, err := Get(c, "/node/network/peers", new([]Peer))
+	if err != nil {
+		return nil, err
+	}
+	return *result, nil
 }
 
 func Get[T any](c *Client, endpoint string, v *T) (*T, error) {

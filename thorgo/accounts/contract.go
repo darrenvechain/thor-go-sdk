@@ -31,10 +31,10 @@ func NewContract(
 }
 
 // Call executes a read-only contract call.
-func (c *Contract) Call(method string, args ...interface{}) (interface{}, error) {
+func (c *Contract) Call(method string, value interface{}, args ...interface{}) error {
 	packed, err := c.abi.Pack(method, args...)
 	if err != nil {
-		return nil, fmt.Errorf("failed to pack method %s: %w", method, err)
+		return fmt.Errorf("failed to pack method %s: %w", method, err)
 	}
 	clause := transaction.NewClause(&c.address).WithData(packed).WithValue(big.NewInt(0))
 	request := client.InspectRequest{
@@ -42,24 +42,24 @@ func (c *Contract) Call(method string, args ...interface{}) (interface{}, error)
 	}
 	response, err := c.client.Inspect(request)
 	if err != nil {
-		return nil, fmt.Errorf("failed to inspect contract: %w", err)
+		return fmt.Errorf("failed to inspect contract: %w", err)
 	}
-	inspection := (*response)[0]
+	inspection := response[0]
 	if inspection.Reverted {
-		return nil, errors.New("contract call reverted")
+		return errors.New("contract call reverted")
 	}
 	if inspection.VmError != "" {
-		return nil, errors.New(inspection.VmError)
+		return errors.New(inspection.VmError)
 	}
 	decoded, err := hexutil.Decode(inspection.Data)
 	if err != nil {
-		return nil, fmt.Errorf("failed to decode data: %w", err)
+		return fmt.Errorf("failed to decode data: %w", err)
 	}
-	result, err := c.abi.Unpack(method, decoded)
+	err = c.abi.UnpackIntoInterface(value, method, decoded)
 	if err != nil {
-		return nil, fmt.Errorf("failed to unpack method %s: %w", method, err)
+		return fmt.Errorf("failed to unpack method %s: %w", method, err)
 	}
-	return result, nil
+	return nil
 }
 
 // AsClause returns a transaction clause for the given method and arguments.

@@ -13,20 +13,22 @@ import (
 
 func TestContract_Call(t *testing.T) {
 	// name
-	result, err := vtho.Call("name")
+	var name string
+	err := vtho.Call("name", &name)
 	assert.NoError(t, err)
-	values, _ := result.([]interface{})
-	assert.Equal(t, "VeThor", values[0])
+	assert.Equal(t, "VeThor", name)
 
 	// symbol
-	result, _ = vtho.Call("symbol")
-	values, _ = result.([]interface{})
-	assert.Equal(t, "VTHO", values[0])
+	var symbol string
+	err = vtho.Call("symbol", &symbol)
+	assert.NoError(t, err)
+	assert.Equal(t, "VTHO", symbol)
 
 	// decimals
-	result, _ = vtho.Call("decimals")
-	values, _ = result.([]interface{})
-	assert.Equal(t, uint8(18), values[0])
+	var decimals uint8
+	err = vtho.Call("decimals", &decimals)
+	assert.NoError(t, err)
+	assert.Equal(t, uint8(18), decimals)
 }
 
 func TestContract_AsClause(t *testing.T) {
@@ -71,7 +73,7 @@ func TestContract_EventCriteria(t *testing.T) {
 	assert.NoError(t, err)
 
 	// decode events
-	decodedEvs, err := vtho.DecodeEvents(*transfers)
+	decodedEvs, err := vtho.DecodeEvents(transfers)
 	assert.NoError(t, err)
 
 	ev := decodedEvs[0]

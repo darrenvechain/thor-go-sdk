@@ -79,11 +79,10 @@ func (b *Builder) Simulate() (Simulation, error) {
 		return Simulation{}, err
 	}
 
-	inspection := *response
-	lastResult := inspection[len(inspection)-1]
+	lastResult := response[len(response)-1]
 
 	var consumedGas uint64
-	for _, res := range inspection {
+	for _, res := range response {
 		consumedGas += res.GasUsed
 	}
 
@@ -96,7 +95,7 @@ func (b *Builder) Simulate() (Simulation, error) {
 		consumedGas:  consumedGas,
 		vmError:      lastResult.VmError,
 		reverted:     lastResult.Reverted,
-		outputs:      inspection,
+		outputs:      response,
 		intrinsicGas: intrinsicGas,
 	}, nil
 }
