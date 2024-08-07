@@ -1,11 +1,12 @@
 package transfers
 
 import (
+	"testing"
+
 	"github.com/darrenvechain/thor-go-sdk/client"
 	"github.com/darrenvechain/thor-go-sdk/solo"
 	blocks2 "github.com/darrenvechain/thor-go-sdk/thorgo/blocks"
 	"github.com/stretchr/testify/assert"
-	"testing"
 )
 
 var (

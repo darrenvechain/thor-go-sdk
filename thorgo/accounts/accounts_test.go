@@ -1,13 +1,14 @@
 package accounts
 
 import (
+	"strings"
+	"testing"
+
 	"github.com/darrenvechain/thor-go-sdk/client"
 	"github.com/darrenvechain/thor-go-sdk/solo"
 	"github.com/ethereum/go-ethereum/accounts/abi"
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/stretchr/testify/assert"
-	"strings"
-	"testing"
 )
 
 var (

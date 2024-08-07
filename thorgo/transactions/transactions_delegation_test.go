@@ -1,12 +1,11 @@
 package transactions
 
 import (
-	"github.com/darrenvechain/thor-go-sdk/client"
-	"github.com/darrenvechain/thor-go-sdk/solo"
-	"github.com/ethereum/go-ethereum/common"
 	"math/big"
 	"testing"
 
+	"github.com/darrenvechain/thor-go-sdk/client"
+	"github.com/darrenvechain/thor-go-sdk/solo"
 	"github.com/darrenvechain/thor-go-sdk/transaction"
 	"github.com/stretchr/testify/assert"
 )
@@ -15,7 +14,6 @@ var (
 	account1      = solo.Signers()[0]
 	account2      = solo.Signers()[1]
 	account3      = solo.Signers()[2]
-	vthoAddr      = common.HexToAddress("0x0000000000000000000000000000456e65726779")
 	thorClient, _ = client.FromURL(solo.URL)
 )
 
