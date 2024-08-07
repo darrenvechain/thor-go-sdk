@@ -4,30 +4,19 @@ import (
 	"math/big"
 	"testing"
 
-	"github.com/darrenvechain/thor-go-sdk/client"
 	"github.com/darrenvechain/thor-go-sdk/solo"
 	"github.com/darrenvechain/thor-go-sdk/transaction"
 	"github.com/ethereum/go-ethereum/crypto"
 	"github.com/stretchr/testify/assert"
 )
 
-var thorClient *client.Client
-
-func init() {
-	var err error
-	thorClient, err = client.FromURL(solo.URL)
-	if err != nil {
-		panic(err)
-	}
-}
-
 func TestContractClause(t *testing.T) {
 	// account 1
-	account1, _ := solo.Key(0)
+	account1 := solo.Keys()[0]
 	account1Addr := crypto.PubkeyToAddress(account1.PublicKey)
 
 	// account 2
-	account2, _ := solo.Key(1)
+	account2 := solo.Keys()[1]
 	account2Addr := crypto.PubkeyToAddress(account2.PublicKey)
 
 	// transfer clause

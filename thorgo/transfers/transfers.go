@@ -13,56 +13,56 @@ var (
 	block      = "block"
 )
 
-type Transfers struct {
+type Filter struct {
 	client  *client.Client
 	request *client.TransferFilter
 }
 
-func New(c *client.Client, criteria []client.TransferCriteria) *Transfers {
-	return &Transfers{client: c, request: &client.TransferFilter{
+func New(c *client.Client, criteria []client.TransferCriteria) *Filter {
+	return &Filter{client: c, request: &client.TransferFilter{
 		Criteria: &criteria,
 	}}
 }
 
-func (t *Transfers) Descending() *Transfers {
-	t.request.Order = &descending
-	return t
+func (f *Filter) Descending() *Filter {
+	f.request.Order = &descending
+	return f
 }
 
-func (t *Transfers) Ascending() *Transfers {
-	t.request.Order = &ascending
-	return t
+func (f *Filter) Ascending() *Filter {
+	f.request.Order = &ascending
+	return f
 }
 
 // BlockRange sets the block range for the transfer filter.
-func (t *Transfers) BlockRange(from uint64, to uint64) *Transfers {
-	t.request.Range = &client.FilterRange{
+func (f *Filter) BlockRange(from uint64, to uint64) *Filter {
+	f.request.Range = &client.FilterRange{
 		From: &from,
 		To:   &to,
 		Unit: &block,
 	}
-	return t
+	return f
 }
 
 // TimeRange sets the time range for the transfer filter.
-func (t *Transfers) TimeRange(from uint64, to uint64) *Transfers {
-	t.request.Range = &client.FilterRange{
+func (f *Filter) TimeRange(from uint64, to uint64) *Filter {
+	f.request.Range = &client.FilterRange{
 		From: &from,
 		To:   &to,
 		Unit: &time,
 	}
-	return t
+	return f
 }
 
 // Apply sends the transfer filter to the node and returns the results.
-func (t *Transfers) Apply(offset uint64, limit uint64) (*[]client.TransferLog, error) {
+func (f *Filter) Apply(offset uint64, limit uint64) (*[]client.TransferLog, error) {
 	if limit > 256 {
 		return nil, errors.New("limit must be less than or equal to 256")
 	}
-	t.request.Options = &client.FilterOptions{
+	f.request.Options = &client.FilterOptions{
 		Offset: &offset,
 		Limit:  &limit,
 	}
 
-	return t.client.FilterTransfers(t.request)
+	return f.client.FilterTransfers(f.request)
 }

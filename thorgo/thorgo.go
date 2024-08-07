@@ -41,11 +41,11 @@ func (t *Thor) TxBuilder(clauses []*transaction.Clause, caller common.Address) *
 	return transactions.NewBuilder(t.client, clauses, caller)
 }
 
-func (t *Thor) Events(criteria []client.EventCriteria) *events.Events {
+func (t *Thor) Events(criteria []client.EventCriteria) *events.Filter {
 	return events.New(t.client, criteria)
 }
 
-func (t *Thor) Transfers(criteria []client.TransferCriteria) *transfers.Transfers {
+func (t *Thor) Transfers(criteria []client.TransferCriteria) *transfers.Filter {
 	return transfers.New(t.client, criteria)
 }
 

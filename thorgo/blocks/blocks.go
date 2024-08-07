@@ -2,6 +2,7 @@ package blocks
 
 import (
 	"fmt"
+	"sync/atomic"
 	"time"
 
 	"github.com/darrenvechain/thor-go-sdk/client"
@@ -10,6 +11,7 @@ import (
 
 type Blocks struct {
 	client *client.Client
+	best   atomic.Value
 }
 
 func New(c *client.Client) *Blocks {
@@ -20,10 +22,24 @@ func (b *Blocks) ByID(id common.Hash) (*client.Block, error) {
 	return b.client.Block(id.Hex())
 }
 
-func (b *Blocks) Best() (*client.Block, error) {
-	return b.client.Block("best")
-}
+func (b *Blocks) Best() (block *client.Block, err error) {
+	// Load the best block from the cache.
+	if best, ok := b.best.Load().(*client.Block); ok {
+		// Convert the timestamp to UTC time.
+		bestTime := time.Unix(int64(best.Timestamp), 0).UTC()
+		if time.Since(bestTime) < 10*time.Second {
+			return best, nil
+		}
+	}
 
+	block, err = b.client.Block("best")
+	if err != nil {
+		return nil, err
+	}
+
+	b.best.Store(block)
+	return block, nil
+}
 func (b *Blocks) Finalized() (*client.Block, error) {
 	return b.client.Block("finalized")
 }
@@ -37,13 +53,17 @@ func (b *Blocks) Expanded(revision string) (*client.ExpandedBlock, error) {
 }
 
 func (b *Blocks) WaitForNext() (*client.Block, error) {
-	currentBlock, err := b.client.Block("best")
+	best, err := b.Best()
 	if err != nil {
 		return nil, err
 	}
 
-	for i := 0; i < 60; i++ {
-		nextBlock, err := b.client.Block(fmt.Sprintf("%d", currentBlock.Number+1))
+	// Sleep until the current block + 10 seconds
+	predictedTime := time.Unix(int64(best.Timestamp), 0).Add(10 * time.Second)
+	time.Sleep(time.Until(predictedTime))
+
+	for i := 0; i < 40; i++ {
+		nextBlock, err := b.client.Block(fmt.Sprintf("%d", best.Number+1))
 		if err == nil {
 			return nextBlock, nil
 		}

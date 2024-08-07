@@ -11,10 +11,8 @@ import (
 )
 
 func TestClient_SendTransaction(t *testing.T) {
-	account1, err := solo.Key(0)
-	assert.NoError(t, err)
-	account2, err := solo.Key(1)
-	assert.NoError(t, err)
+	account1 := solo.Keys()[0]
+	account2 := solo.Keys()[1]
 	account2Addr := crypto.PubkeyToAddress(account2.PublicKey)
 
 	vetClause := transaction.NewClause(&account2Addr).

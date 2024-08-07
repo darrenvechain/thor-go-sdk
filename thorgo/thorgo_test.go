@@ -4,7 +4,6 @@ import (
 	"testing"
 
 	"github.com/darrenvechain/thor-go-sdk/client"
-
 	"github.com/darrenvechain/thor-go-sdk/solo"
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/crypto"
@@ -52,7 +51,7 @@ func TestGetAccount(t *testing.T) {
 
 func TestTransfers(t *testing.T) {
 	// account 1
-	account1, _ := solo.Key(0)
+	account1 := solo.Keys()[0]
 	account1Addr := crypto.PubkeyToAddress(account1.PublicKey)
 
 	criteria := make([]client.TransferCriteria, 0)

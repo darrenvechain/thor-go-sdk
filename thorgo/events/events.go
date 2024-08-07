@@ -13,54 +13,54 @@ var (
 	block      = "block"
 )
 
-type Events struct {
+type Filter struct {
 	client  *client.Client
 	request *client.EventFilter
 }
 
-func New(c *client.Client, criteria []client.EventCriteria) *Events {
-	return &Events{client: c, request: &client.EventFilter{
+func New(c *client.Client, criteria []client.EventCriteria) *Filter {
+	return &Filter{client: c, request: &client.EventFilter{
 		Criteria: &criteria,
 	}}
 }
 
-func (e *Events) Descending() *Events {
-	e.request.Order = &descending
-	return e
+func (f *Filter) Descending() *Filter {
+	f.request.Order = &descending
+	return f
 }
 
-func (e *Events) Ascending() *Events {
-	e.request.Order = &ascending
-	return e
+func (f *Filter) Ascending() *Filter {
+	f.request.Order = &ascending
+	return f
 }
 
-func (e *Events) BlockRange(from uint64, to uint64) *Events {
-	e.request.Range = &client.FilterRange{
+func (f *Filter) BlockRange(from uint64, to uint64) *Filter {
+	f.request.Range = &client.FilterRange{
 		From: &from,
 		To:   &to,
 		Unit: &block,
 	}
-	return e
+	return f
 }
 
-func (e *Events) TimeRange(from uint64, to uint64) *Events {
-	e.request.Range = &client.FilterRange{
+func (f *Filter) TimeRange(from uint64, to uint64) *Filter {
+	f.request.Range = &client.FilterRange{
 		From: &from,
 		To:   &to,
 		Unit: &time,
 	}
-	return e
+	return f
 }
 
-func (e *Events) Apply(offset uint64, limit uint64) (*[]client.EventLog, error) {
+func (f *Filter) Apply(offset uint64, limit uint64) (*[]client.EventLog, error) {
 	if limit > 256 {
 		return nil, errors.New("limit must be less than or equal to 256")
 	}
 
-	e.request.Options = &client.FilterOptions{
+	f.request.Options = &client.FilterOptions{
 		Offset: &offset,
 		Limit:  &limit,
 	}
 
-	return e.client.FilterEvents(e.request)
+	return f.client.FilterEvents(f.request)
 }

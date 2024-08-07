@@ -1,30 +1,30 @@
-package internal
+package transactions
 
 import (
-	"github.com/darrenvechain/thor-go-sdk/transaction"
-	"github.com/ethereum/go-ethereum/crypto"
-	"github.com/stretchr/testify/assert"
 	"math/big"
 	"testing"
+
+	"github.com/darrenvechain/thor-go-sdk/transaction"
+	"github.com/stretchr/testify/assert"
 )
 
 // TestTransactions demonstrates how to build, sign, send, and wait for a transaction
 func TestTransactions(t *testing.T) {
 	// build a transaction
-	vetClause := transaction.NewClause(&account2Addr).WithValue(big.NewInt(1000))
-	unsigned, err := thor.TxBuilder([]*transaction.Clause{vetClause}, account1Addr).Build()
+	to := account2.Address()
+	vetClause := transaction.NewClause(&to).WithValue(big.NewInt(1000))
+	unsigned, err := NewBuilder(thorClient, []*transaction.Clause{vetClause}, account1.Address()).Build()
 	assert.NoError(t, err)
 
 	// sign it
-	signature, err := crypto.Sign(unsigned.SigningHash().Bytes(), account1)
+	signed, err := account1.SignTransaction(unsigned)
 	assert.NoError(t, err)
-	signed := unsigned.WithSignature(signature)
 
 	// send it
-	res, err := thor.Client().SendTransaction(signed)
+	res, err := thorClient.SendTransaction(signed)
 	assert.NoError(t, err)
 
-	tx := thor.Transaction(res.ID)
+	tx := New(thorClient, res.ID)
 
 	// fetch the pending transaction
 	pending, err := tx.Pending()

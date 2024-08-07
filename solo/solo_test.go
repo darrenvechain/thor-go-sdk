@@ -23,10 +23,7 @@ func TestKey(t *testing.T) {
 
 	for i, tc := range testCases {
 		t.Run(tc.address, func(t *testing.T) {
-			key, err := Key(i)
-			if err != nil {
-				t.Fatal(err)
-			}
+			key := Keys()[i]
 			addr := crypto.PubkeyToAddress(key.PublicKey).Hex()
 			assert.Equal(t, tc.address, addr)
 		})

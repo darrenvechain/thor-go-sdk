@@ -24,4 +24,5 @@ type EventCriteria struct {
 	Topic1  *common.Hash    `json:"topic1,omitempty"`
 	Topic2  *common.Hash    `json:"topic2,omitempty"`
 	Topic3  *common.Hash    `json:"topic3,omitempty"`
+	Topic4  *common.Hash    `json:"topic4,omitempty"`
 }
