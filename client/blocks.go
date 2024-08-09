@@ -50,8 +50,8 @@ type BlockTransaction struct {
 	Size         uint64               `json:"size"`
 	GasUsed      uint64               `json:"gasUsed"`
 	GasPayer     common.Address       `json:"gasPayer"`
-	Paid         uint64               `json:"paid"`
-	Reward       uint64               `json:"reward"`
+	Paid         hex.Int              `json:"paid"`
+	Reward       hex.Int              `json:"reward"`
 	Reverted     bool                 `json:"reverted"`
 	Outputs      []Output             `json:"outputs"`
 }

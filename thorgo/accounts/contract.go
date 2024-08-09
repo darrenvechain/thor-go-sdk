@@ -1,6 +1,7 @@
 package accounts
 
 import (
+	"bytes"
 	"errors"
 	"fmt"
 	"math/big"
@@ -56,6 +57,30 @@ func (c *Contract) Call(method string, value interface{}, args ...interface{}) e
 		return fmt.Errorf("failed to decode data: %w", err)
 	}
 	err = c.abi.UnpackIntoInterface(value, method, decoded)
+	if err != nil {
+		return fmt.Errorf("failed to unpack method %s: %w", method, err)
+	}
+	return nil
+}
+
+// DecodeCall decodes the result of a contract call.
+// The data must include the method signature.
+func (c *Contract) DecodeCall(data []byte, value interface{}) error {
+	var method string
+	for name, m := range c.abi.Methods {
+		if len(data) >= 4 && bytes.Equal(data[:4], m.ID) {
+			method = name
+			break
+		}
+	}
+
+	if method == "" {
+		return errors.New("method signature not found")
+	}
+
+	data = data[4:]
+
+	err := c.abi.UnpackIntoInterface(value, method, data)
 	if err != nil {
 		return fmt.Errorf("failed to unpack method %s: %w", method, err)
 	}
@@ -145,16 +170,17 @@ func (c *Contract) EventCriteria(name string, matchers ...interface{}) (client.E
 type Event struct {
 	Name string
 	Args map[string]interface{}
+	Log  client.EventLog
 }
 
-func (c *Contract) DecodeEvents(events []client.EventLog) ([]Event, error) {
+func (c *Contract) DecodeEvents(logs []client.EventLog) ([]Event, error) {
 	var decoded []Event
-	for _, ev := range events {
-		if len(ev.Topics) < 2 {
+	for _, log := range logs {
+		if len(log.Topics) < 2 {
 			continue
 		}
 
-		eventABI, err := c.abi.EventByID(ev.Topics[0])
+		eventABI, err := c.abi.EventByID(log.Topics[0])
 		if err != nil {
 			continue
 		}
@@ -167,12 +193,12 @@ func (c *Contract) DecodeEvents(events []client.EventLog) ([]Event, error) {
 		}
 
 		values := make(map[string]interface{})
-		err = abi.ParseTopicsIntoMap(values, indexed, ev.Topics[1:])
+		err = abi.ParseTopicsIntoMap(values, indexed, log.Topics[1:])
 		if err != nil {
 			return nil, err
 		}
 
-		data, err := hexutil.Decode(ev.Data)
+		data, err := hexutil.Decode(log.Data)
 		if err != nil {
 			return nil, err
 		}
@@ -184,6 +210,7 @@ func (c *Contract) DecodeEvents(events []client.EventLog) ([]Event, error) {
 		decoded = append(decoded, Event{
 			Name: eventABI.Name,
 			Args: values,
+			Log:  log,
 		})
 	}
 	return decoded, nil

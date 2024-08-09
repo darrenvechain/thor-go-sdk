@@ -31,6 +31,16 @@ func TestContract_Call(t *testing.T) {
 	assert.Equal(t, uint8(18), decimals)
 }
 
+func TestContract_DecodeCall(t *testing.T) {
+	packed, err := vthoABI.Pack("balanceOf", account1.Address())
+	assert.NoError(t, err)
+
+	balance := new(big.Int)
+	err = vtho.DecodeCall(packed, &balance)
+	assert.NoError(t, err)
+	assert.Greater(t, balance.Uint64(), uint64(0))
+}
+
 func TestContract_AsClause(t *testing.T) {
 	receiver, err := txmanager.GeneratePK()
 	assert.NoError(t, err)

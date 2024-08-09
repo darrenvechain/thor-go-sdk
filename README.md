@@ -16,7 +16,7 @@ To install the Thor GO SDK, run the following command:
 go get github.com/darrenvechain/thor-go-sdk
 ```
 
-## Examples
+## Usage
 
 ```golang
 package main
@@ -37,13 +37,3 @@ func main() {
 	fmt.Println(acc.Balance)
 }
 ```
-
-The following test files demonstrate how to interact with the VechainThor blockchain using the Thor GO SDK:
-
-- [Accounts](./examples/internal/accounts_test.go) - Fetch account details, code and storage.
-- [Blocks](./examples/internal/blocks_test.go) - Fetch blocks by revisions.
-- [Contracts](./examples/internal/contracts_test.go) - Read state and create transaction clauses.
-- [Events](./examples/internal/log_events_test.go) - Query on chain events.
-- [Transfers](./examples/internal/log_transfers_test.go) - Query on chain VET transfers.
-- [Transactions](./examples/internal/transactions_test.go) - Send transactions and query transaction details.
-- [Signers](./examples/internal/private_key_signer_test.go) - Simplify transaction building, signing, sending and retrieving.
