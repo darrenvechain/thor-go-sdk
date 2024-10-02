@@ -13,7 +13,6 @@ import (
 
 	hash2 "github.com/darrenvechain/thor-go-sdk/hash"
 	"github.com/ethereum/go-ethereum/common"
-
 	"github.com/stretchr/testify/assert"
 	"golang.org/x/crypto/sha3"
 )

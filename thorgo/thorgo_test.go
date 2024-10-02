@@ -29,7 +29,7 @@ func TestFromClient(t *testing.T) {
 	c, _ := client.FromURL(solo.URL)
 	thor := FromClient(c)
 	assert.NotNil(t, thor)
-	assert.Equal(t, solo.ChainTag(), thor.Client().ChainTag())
+	assert.Equal(t, solo.ChainTag(), thor.Client.ChainTag())
 }
 
 func TestBlock(t *testing.T) {
@@ -41,8 +41,8 @@ func TestBlock(t *testing.T) {
 func TestGetAccount(t *testing.T) {
 	soloAccount := common.HexToAddress("0xf077b491b355E64048cE21E3A6Fc4751eEeA77fa")
 	acc, err := thor.Account(soloAccount).Get()
-	assert.NoError(t, err, "Account.Get should not return an error")
-	assert.NotNil(t, acc, "Account.Get should return an account")
+	assert.NoError(t, err, "Account.httpGet should not return an error")
+	assert.NotNil(t, acc, "Account.httpGet should return an account")
 
 	assert.Greater(t, acc.Balance.Uint64(), uint64(0))
 	assert.Greater(t, acc.Energy.Uint64(), uint64(0))

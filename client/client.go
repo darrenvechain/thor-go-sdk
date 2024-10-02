@@ -12,20 +12,20 @@ import (
 )
 
 type Client struct {
-	client       http.Client
+	client       *http.Client
 	url          string
 	genesisBlock *Block
 }
 
-func New(url string, client http.Client) (*Client, error) {
+func New(url string, client *http.Client) (*Client, error) {
 	return newClient(url, client)
 }
 
 func FromURL(url string) (*Client, error) {
-	return New(url, http.Client{})
+	return New(url, &http.Client{})
 }
 
-func newClient(url string, client http.Client) (*Client, error) {
+func newClient(url string, client *http.Client) (*Client, error) {
 	url = strings.TrimSuffix(url, "/")
 
 	c := &Client{
@@ -44,14 +44,14 @@ func newClient(url string, client http.Client) (*Client, error) {
 
 // Account fetches the account information for the given address.
 func (c *Client) Account(addr common.Address) (*Account, error) {
-	url := "/accounts/" + addr.String()
-	return Get(c, url, new(Account))
+	url := "/accounts/" + addr.Hex()
+	return httpGet(c, url, &Account{})
 }
 
-// AccountForRevision fetches the account information for the given address at the given revision.
-func (c *Client) AccountForRevision(addr common.Address, revision common.Hash) (*Account, error) {
-	url := "/accounts/" + addr.String() + "?revision=" + revision.String()
-	return Get(c, url, new(Account))
+// AccountAt fetches the account information for an address at the given revision.
+func (c *Client) AccountAt(addr common.Address, revision common.Hash) (*Account, error) {
+	url := "/accounts/" + addr.Hex() + "?revision=" + revision.Hex()
+	return httpGet(c, url, &Account{})
 }
 
 // Inspect will send an array of clauses to the node to simulate the execution of the clauses.
@@ -60,45 +60,57 @@ func (c *Client) AccountForRevision(addr common.Address, revision common.Hash) (
 // - Simulate the execution of a transaction
 func (c *Client) Inspect(body InspectRequest) ([]InspectResponse, error) {
 	url := "/accounts/*"
-	result, err := Post(c, url, body, new([]InspectResponse))
+	response := make([]InspectResponse, 0)
+	_, err := httpPost(c, url, body, &response)
 	if err != nil {
 		return nil, err
 	}
-	return *result, nil
+	return response, nil
+}
+
+// InspectAt will send an array of clauses to the node to simulate the execution of the clauses at the given revision.
+func (c *Client) InspectAt(body InspectRequest, revision common.Hash) ([]InspectResponse, error) {
+	url := "/accounts/*?revision=" + revision.Hex()
+	response := make([]InspectResponse, 0)
+	_, err := httpPost(c, url, body, &response)
+	if err != nil {
+		return nil, err
+	}
+	return response, nil
 }
 
 // AccountCode fetches the code for the account at the given address.
 func (c *Client) AccountCode(addr common.Address) (*AccountCode, error) {
-	url := "/accounts/" + addr.String() + "/code"
-	return Get(c, url, new(AccountCode))
+	url := "/accounts/" + addr.Hex() + "/code"
+	return httpGet(c, url, &AccountCode{})
 }
 
-// AccountCodeForRevision fetches the code for the account at the given address at the given revision.
-func (c *Client) AccountCodeForRevision(addr common.Address, revision common.Hash) (*AccountCode, error) {
-	url := "/accounts/" + addr.String() + "/code?revision=" + revision.String()
-	return Get(c, url, new(AccountCode))
+// AccountCodeAt fetches the code for the account at the given address and revision.
+func (c *Client) AccountCodeAt(addr common.Address, revision common.Hash) (*AccountCode, error) {
+	url := "/accounts/" + addr.Hex() + "/code?revision=" + revision.Hex()
+	return httpGet(c, url, &AccountCode{})
 }
 
 // AccountStorage fetches the storage value for the account at the given address and key.
 func (c *Client) AccountStorage(addr common.Address, key common.Hash) (*AccountStorage, error) {
-	url := "/accounts/" + addr.String() + "/storage/" + key.Hex()
-	return Get(c, url, new(AccountStorage))
+	url := "/accounts/" + addr.Hex() + "/storage/" + key.Hex()
+	return httpGet(c, url, &AccountStorage{})
 }
 
-// AccountStorageForRevision fetches the storage value for the account at the given address and key at the given revision.
-func (c *Client) AccountStorageForRevision(
+// AccountStorageAt fetches the storage value for the account at the given address and key at the given revision.
+func (c *Client) AccountStorageAt(
 	addr common.Address,
 	key common.Hash,
 	revision common.Hash,
 ) (*AccountStorage, error) {
-	url := "/accounts/" + addr.Hex() + "/storage/" + key.Hex() + "?revision=" + revision.String()
-	return Get(c, url, new(AccountStorage))
+	url := "/accounts/" + addr.Hex() + "/storage/" + key.Hex() + "?revision=" + revision.Hex()
+	return httpGet(c, url, &AccountStorage{})
 }
 
 // Block fetches the block for the given revision.
 func (c *Client) Block(revision string) (*Block, error) {
 	url := "/blocks/" + revision
-	return Get(c, url, new(Block))
+	return httpGet(c, url, &Block{})
 }
 
 // BestBlock returns the best block.
@@ -114,7 +126,7 @@ func (c *Client) GenesisBlock() *Block {
 // ExpandedBlock fetches the block at the given revision with all the transactions expanded.
 func (c *Client) ExpandedBlock(revision string) (*ExpandedBlock, error) {
 	url := "/blocks/" + revision + "?expanded=true"
-	return Get(c, url, new(ExpandedBlock))
+	return httpGet(c, url, &ExpandedBlock{})
 }
 
 // ChainTag returns the chain tag of the genesis block.
@@ -130,87 +142,110 @@ func (c *Client) SendTransaction(tx *transaction.Transaction) (*SendTransactionR
 		return nil, err
 	}
 	body["raw"] = "0x" + encoded
-	return Post(c, "/transactions", body, new(SendTransactionResponse))
+	return httpPost(c, "/transactions", body, &SendTransactionResponse{})
 }
 
 // SendRawTransaction sends a raw transaction to the node.
 func (c *Client) SendRawTransaction(raw string) (*SendTransactionResponse, error) {
 	body := make(map[string]string)
 	body["raw"] = raw
-	return Post(c, "/transactions", body, new(SendTransactionResponse))
+	return httpPost(c, "/transactions", body, &SendTransactionResponse{})
 }
 
 // Transaction fetches a transaction by its ID.
 func (c *Client) Transaction(id common.Hash) (*Transaction, error) {
 	url := "/transactions/" + id.Hex()
-	return Get(c, url, new(Transaction))
+	return httpGet(c, url, &Transaction{})
+}
+
+// TransactionAt fetches a transaction by its ID for the given head block ID.
+func (c *Client) TransactionAt(id common.Hash, head common.Hash) (*Transaction, error) {
+	url := "/transactions/" + id.Hex() + "?head=" + head.Hex()
+	return httpGet(c, url, &Transaction{})
 }
 
 // RawTransaction fetches a transaction by its ID and returns the raw transaction.
 func (c *Client) RawTransaction(id common.Hash) (*RawTransaction, error) {
 	url := "/transactions/" + id.Hex() + "?raw=true"
-	return Get(c, url, new(RawTransaction))
+	return httpGet(c, url, &RawTransaction{})
+}
+
+// RawTransactionAt fetches a transaction by its ID for the given head block ID and returns the raw transaction.
+func (c *Client) RawTransactionAt(id common.Hash, head common.Hash) (*RawTransaction, error) {
+	url := "/transactions/" + id.Hex() + "?head=" + head.Hex() + "&raw=true"
+	return httpGet(c, url, &RawTransaction{})
 }
 
 // PendingTransaction includes the pending block when fetching a transaction.
 func (c *Client) PendingTransaction(id common.Hash) (*Transaction, error) {
 	url := "/transactions/" + id.Hex() + "?pending=true"
-	return Get(c, url, new(Transaction))
+	return httpGet(c, url, &Transaction{})
 }
 
+// TransactionReceipt fetches a transaction receipt by its ID.
 func (c *Client) TransactionReceipt(id common.Hash) (*TransactionReceipt, error) {
 	url := "/transactions/" + id.Hex() + "/receipt"
-	return Get(c, url, new(TransactionReceipt))
+	return httpGet(c, url, &TransactionReceipt{})
+}
+
+// TransactionReceiptAt fetches a transaction receipt by its ID for the given head block ID.
+func (c *Client) TransactionReceiptAt(id common.Hash, head common.Hash) (*TransactionReceipt, error) {
+	url := "/transactions/" + id.Hex() + "/receipt?revision=" + head.Hex()
+	return httpGet(c, url, &TransactionReceipt{})
 }
 
 func (c *Client) FilterEvents(filter *EventFilter) ([]EventLog, error) {
 	path := "/logs/event"
-	result, err := Post(c, path, filter, new([]EventLog))
+	events := make([]EventLog, 0)
+	_, err := httpPost(c, path, filter, &events)
 	if err != nil {
 		return nil, err
 	}
-	return *result, nil
+	return events, nil
 }
 
 func (c *Client) FilterTransfers(filter *TransferFilter) ([]TransferLog, error) {
 	path := "/logs/transfer"
-	result, err := Post(c, path, filter, new([]TransferLog))
+	transfers := make([]TransferLog, 0)
+	_, err := httpPost(c, path, filter, &transfers)
 	if err != nil {
 		return nil, err
 	}
-	return *result, nil
+	return transfers, nil
 }
 
 func (c *Client) Peers() ([]Peer, error) {
-	result, err := Get(c, "/node/network/peers", new([]Peer))
+	path := "/node/network/peers"
+	peers := make([]Peer, 0)
+	_, err := httpGet(c, path, &peers)
 	if err != nil {
 		return nil, err
 	}
-	return *result, nil
+	return peers, nil
 }
 
-func Get[T any](c *Client, endpoint string, v *T) (*T, error) {
-	req, err := http.NewRequest("GET", c.url+endpoint, nil)
+func httpGet[T any](c *Client, endpoint string, v *T) (*T, error) {
+	req, err := http.NewRequest(http.MethodGet, c.url+endpoint, nil)
 	if err != nil {
 		return nil, err
 	}
-	return Do(c, req, v)
+	return httpDo(c, req, v)
 }
 
-func Post[T any](c *Client, path string, body interface{}, v *T) (*T, error) {
+func httpPost[T any](c *Client, path string, body interface{}, v *T) (*T, error) {
 	reqBody, err := json.Marshal(body)
 	if err != nil {
 		return nil, err
 	}
-	request, err := http.NewRequest("POST", c.url+path, strings.NewReader(string(reqBody)))
+	request, err := http.NewRequest(http.MethodPost, c.url+path, strings.NewReader(string(reqBody)))
 	if err != nil {
 		return nil, err
 	}
 	request.Header.Set("Content-Type", "application/json")
-	return Do(c, request, v)
+	return httpDo(c, request, v)
 }
 
-func Do[T any](c *Client, req *http.Request, v *T) (*T, error) {
+func httpDo[T any](c *Client, req *http.Request, v *T) (*T, error) {
 	response, err := c.client.Do(req)
 	if err != nil {
 		return nil, err
@@ -222,21 +257,18 @@ func Do[T any](c *Client, req *http.Request, v *T) (*T, error) {
 	defer response.Body.Close()
 
 	// Read the entire body into a buffer
-	bodyBytes, err := io.ReadAll(response.Body)
+	responseBody, err := io.ReadAll(response.Body)
 	if err != nil {
 		return nil, err
 	}
 
 	// Check if the body is "null"
-	if strings.TrimSpace(string(bodyBytes)) == "null" {
+	if strings.TrimSpace(string(responseBody)) == "null" {
 		return nil, ErrNotFound
 	}
 
-	// Create a new reader from the buffered body
-	bodyReader := bytes.NewReader(bodyBytes)
-
 	// Decode the JSON response
-	err = json.NewDecoder(bodyReader).Decode(v)
+	err = json.NewDecoder(bytes.NewReader(responseBody)).Decode(v)
 	if err != nil {
 		return nil, err
 	}

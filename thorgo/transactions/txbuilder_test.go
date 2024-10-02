@@ -1,10 +1,11 @@
-package transactions
+package transactions_test
 
 import (
 	"math/big"
 	"testing"
 
 	"github.com/darrenvechain/thor-go-sdk/solo"
+	"github.com/darrenvechain/thor-go-sdk/thorgo/transactions"
 	"github.com/darrenvechain/thor-go-sdk/transaction"
 	"github.com/ethereum/go-ethereum/crypto"
 	"github.com/stretchr/testify/assert"
@@ -21,7 +22,7 @@ func TestContractClause(t *testing.T) {
 
 	// transfer clause
 	clause := transaction.NewClause(&account2Addr).WithData([]byte{}).WithValue(big.NewInt(1000))
-	txbuilder := NewBuilder(thorClient, []*transaction.Clause{clause}, account1Addr)
+	txbuilder := transactions.NewBuilder(thorClient, []*transaction.Clause{clause}, account1Addr)
 
 	// simulation
 	simulation, err := txbuilder.Simulate()
