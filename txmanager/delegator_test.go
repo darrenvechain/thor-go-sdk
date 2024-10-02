@@ -9,12 +9,11 @@ import (
 	"testing"
 
 	"github.com/darrenvechain/thor-go-sdk/builtins"
-	"github.com/darrenvechain/thor-go-sdk/thorgo"
-	"github.com/ethereum/go-ethereum/crypto"
-
 	"github.com/darrenvechain/thor-go-sdk/solo"
+	"github.com/darrenvechain/thor-go-sdk/thorgo"
 	"github.com/darrenvechain/thor-go-sdk/transaction"
 	"github.com/ethereum/go-ethereum/common"
+	"github.com/ethereum/go-ethereum/crypto"
 	"github.com/stretchr/testify/assert"
 )
 

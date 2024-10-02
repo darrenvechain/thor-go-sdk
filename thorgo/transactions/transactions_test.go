@@ -8,9 +8,8 @@ import (
 	"github.com/darrenvechain/thor-go-sdk/solo"
 	"github.com/darrenvechain/thor-go-sdk/thorgo"
 	"github.com/darrenvechain/thor-go-sdk/thorgo/transactions"
-	"github.com/darrenvechain/thor-go-sdk/txmanager"
-
 	"github.com/darrenvechain/thor-go-sdk/transaction"
+	"github.com/darrenvechain/thor-go-sdk/txmanager"
 	"github.com/stretchr/testify/assert"
 )
 
