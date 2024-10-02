@@ -1,4 +1,4 @@
-package accounts
+package accounts_test
 
 import (
 	"math/big"
@@ -14,49 +14,49 @@ import (
 func TestContract_Call(t *testing.T) {
 	// name
 	var name string
-	err := vtho.Call("name", &name)
+	err := vthoContract.Call("name", &name)
 	assert.NoError(t, err)
 	assert.Equal(t, "VeThor", name)
 
 	// symbol
 	var symbol string
-	err = vtho.Call("symbol", &symbol)
+	err = vthoContract.Call("symbol", &symbol)
 	assert.NoError(t, err)
 	assert.Equal(t, "VTHO", symbol)
 
 	// decimals
 	var decimals uint8
-	err = vtho.Call("decimals", &decimals)
+	err = vthoContract.Call("decimals", &decimals)
 	assert.NoError(t, err)
 	assert.Equal(t, uint8(18), decimals)
 }
 
 func TestContract_DecodeCall(t *testing.T) {
-	packed, err := vthoABI.Pack("balanceOf", account1.Address())
+	packed, err := vtho.ABI.Pack("balanceOf", account1.Address())
 	assert.NoError(t, err)
 
 	balance := new(big.Int)
-	err = vtho.DecodeCall(packed, &balance)
+	err = vthoContract.DecodeCall(packed, &balance)
 	assert.NoError(t, err)
 	assert.Greater(t, balance.Uint64(), uint64(0))
 }
 
 func TestContract_AsClause(t *testing.T) {
-	receiver, err := txmanager.GeneratePK()
+	receiver, err := txmanager.GeneratePK(thor)
 	assert.NoError(t, err)
 
 	// transfer clause
-	clause, err := vtho.AsClause("transfer", receiver.Address(), big.NewInt(1000))
+	clause, err := vthoContract.AsClause("transfer", receiver.Address(), big.NewInt(1000))
 	assert.NoError(t, err)
 	assert.Equal(t, clause.Value(), big.NewInt(0))
-	assert.Equal(t, clause.To().Hex(), vthoAddr.Hex())
+	assert.Equal(t, clause.To().Hex(), vtho.Address.Hex())
 }
 
 func TestContract_Send(t *testing.T) {
-	receiver, err := txmanager.GeneratePK()
+	receiver, err := txmanager.GeneratePK(thor)
 	assert.NoError(t, err)
 
-	tx, err := vtho.Send(account1, "transfer", receiver.Address(), big.NewInt(1000))
+	tx, err := vthoContract.Send(account1, "transfer", receiver.Address(), big.NewInt(1000))
 	assert.NoError(t, err)
 
 	receipt, err := tx.Wait()
@@ -65,17 +65,17 @@ func TestContract_Send(t *testing.T) {
 }
 
 func TestContract_EventCriteria(t *testing.T) {
-	receiver, err := txmanager.GeneratePK()
+	receiver, err := txmanager.GeneratePK(thor)
 	assert.NoError(t, err)
 
-	tx, err := vtho.Send(account1, "transfer", receiver.Address(), big.NewInt(1000))
+	tx, err := vthoContract.Send(account1, "transfer", receiver.Address(), big.NewInt(1000))
 	assert.NoError(t, err)
 
 	receipt, _ := tx.Wait()
 	assert.False(t, receipt.Reverted)
 
 	// event criteria - match the newly created receiver
-	criteria, err := vtho.EventCriteria("Transfer", nil, receiver.Address())
+	criteria, err := vthoContract.EventCriteria("Transfer", nil, receiver.Address())
 	assert.NoError(t, err)
 
 	// fetch events
@@ -83,7 +83,7 @@ func TestContract_EventCriteria(t *testing.T) {
 	assert.NoError(t, err)
 
 	// decode events
-	decodedEvs, err := vtho.DecodeEvents(transfers)
+	decodedEvs, err := vthoContract.DecodeEvents(transfers)
 	assert.NoError(t, err)
 
 	ev := decodedEvs[0]
@@ -95,112 +95,3 @@ func TestContract_EventCriteria(t *testing.T) {
 	assert.IsType(t, common.Address{}, ev.Args["to"])
 	assert.IsType(t, &big.Int{}, ev.Args["value"])
 }
-
-const erc20ABI = `[
-    {
-        "constant":true,
-        "inputs":[],
-        "name":"name",
-        "outputs":[
-            {
-                "name":"",
-                "type":"string"
-            }
-        ],
-        "payable":false,
-        "stateMutability":"view",
-        "type":"function"
-    },
-    {
-        "constant":true,
-        "inputs":[],
-        "name":"symbol",
-        "outputs":[
-            {
-                "name":"",
-                "type":"string"
-            }
-        ],
-        "payable":false,
-        "stateMutability":"view",
-        "type":"function"
-    },
-    {
-        "constant":true,
-        "inputs":[],
-        "name":"decimals",
-        "outputs":[
-            {
-                "name":"",
-                "type":"uint8"
-            }
-        ],
-        "payable":false,
-        "stateMutability":"view",
-        "type":"function"
-    },
-    {
-        "constant":false,
-        "inputs":[
-            {
-                "name":"to",
-                "type":"address"
-            },
-            {
-                "name":"value",
-                "type":"uint256"
-            }
-        ],
-        "name":"transfer",
-        "outputs":[
-            {
-                "name":"",
-                "type":"bool"
-            }
-        ],
-        "payable":false,
-        "stateMutability":"nonpayable",
-        "type":"function"
-    },
-    {
-        "constant":true,
-        "name":"balanceOf",
-        "inputs":[
-            {
-                "name":"owner",
-                "type":"address"
-            }
-        ],
-        "outputs":[
-            {
-                "name":"",
-                "type":"uint256"
-            }
-        ],
-        "payable":false,
-        "stateMutability":"view",
-        "type":"function"
-    },
-    {
-        "anonymous":false,
-        "inputs":[
-            {
-                "indexed":true,
-                "name":"from",
-                "type":"address"
-            },
-            {
-                "indexed":true,
-                "name":"to",
-                "type":"address"
-            },
-            {
-                "indexed":false,
-                "name":"value",
-                "type":"uint256"
-            }
-        ],
-        "name":"Transfer",
-        "type":"event"
-    }
-]`

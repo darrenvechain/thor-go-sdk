@@ -17,7 +17,6 @@ import (
 
 	"github.com/darrenvechain/thor-go-sdk/hash"
 	"github.com/ethereum/go-ethereum/common"
-
 	"github.com/ethereum/go-ethereum/common/math"
 	"github.com/ethereum/go-ethereum/crypto"
 	"github.com/ethereum/go-ethereum/crypto/secp256k1"
@@ -450,6 +449,14 @@ func (t *Transaction) validateSignatureLength() error {
 		return secp256k1.ErrInvalidSignatureLen
 	}
 	return nil
+}
+
+func Decode(data []byte) (*Transaction, error) {
+	var tx Transaction
+	if err := rlp.DecodeBytes(data, &tx); err != nil {
+		return nil, err
+	}
+	return &tx, nil
 }
 
 // IntrinsicGas calculate intrinsic gas cost for tx with such clauses.

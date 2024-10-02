@@ -9,10 +9,11 @@ import (
 )
 
 type Builder struct {
-	client  *client.Client
-	clauses []*transaction.Clause
-	builder *transaction.Builder
-	caller  common.Address
+	client   *client.Client
+	clauses  []*transaction.Clause
+	builder  *transaction.Builder
+	caller   common.Address
+	gasPayer *common.Address
 }
 
 func NewBuilder(client *client.Client, clauses []*transaction.Clause, caller common.Address) *Builder {
@@ -23,6 +24,12 @@ func NewBuilder(client *client.Client, clauses []*transaction.Clause, caller com
 		caller:  caller,
 		builder: builder,
 	}
+}
+
+// GasPayer sets the gas payer for the transaction. This is used to simulate the transaction.
+func (b *Builder) GasPayer(payer common.Address) *Builder {
+	b.gasPayer = &payer
+	return b
 }
 
 // Gas sets the gas provision for the transaction. If not set, it will be estimated.
@@ -61,7 +68,7 @@ func (b *Builder) DependsOn(txID *common.Hash) *Builder {
 	return b
 }
 
-// Delegated enables transaction delegation. If not set, it will be nil.
+// Delegate enables transaction delegation. If not set, it will be nil.
 func (b *Builder) Delegate() *Builder {
 	b.builder.Features(transaction.DelegationFeature)
 	return b
@@ -72,6 +79,10 @@ func (b *Builder) Simulate() (Simulation, error) {
 	request := client.InspectRequest{
 		Clauses: b.clauses,
 		Caller:  &b.caller,
+	}
+
+	if b.gasPayer != nil {
+		request.GasPayer = b.gasPayer
 	}
 
 	response, err := b.client.Inspect(request)
