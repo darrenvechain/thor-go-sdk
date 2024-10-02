@@ -17,7 +17,6 @@ type Options struct {
 
 // Manager represents a transaction manager. It is used to send transactions to the blockchain
 type Manager interface {
-	Address() common.Address
 	SendClauses(clauses []*transaction.Clause) (common.Hash, error)
 }
 
