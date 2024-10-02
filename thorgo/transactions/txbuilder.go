@@ -166,7 +166,7 @@ func (b *Builder) Build() (*transaction.Transaction, error) {
 }
 
 type TxSigner interface {
-	SignTransaction(tx *transaction.Transaction) (*transaction.Transaction, error)
+	SignTransaction(tx *transaction.Transaction) ([]byte, error)
 }
 
 func (b *Builder) Send(signer TxSigner) (*Visitor, error) {
@@ -175,10 +175,11 @@ func (b *Builder) Send(signer TxSigner) (*Visitor, error) {
 		return nil, fmt.Errorf("failed to build transaction: %w", err)
 	}
 
-	tx, err = signer.SignTransaction(tx)
+	signature, err := signer.SignTransaction(tx)
 	if err != nil {
 		return nil, fmt.Errorf("failed to sign transaction: %w", err)
 	}
+	tx = tx.WithSignature(signature)
 
 	res, err := b.client.SendTransaction(tx)
 	if err != nil {
