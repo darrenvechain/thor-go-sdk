@@ -18,6 +18,8 @@ go get github.com/darrenvechain/thor-go-sdk
 
 ## Usage
 
+### Example 1: Creating a New Client
+
 ```golang
 package main
 
@@ -36,4 +38,76 @@ func main() {
 	acc, err := thor.Account(common.HexToAddress("0x0000000000000000000000000000456e6570")).Get()
 	fmt.Println(acc.Balance)
 }
+```
+
+### Example 2: Interacting with a contract
+    
+```golang
+package main
+
+import (
+	"log/slog"
+	"math/big"
+	"strings"
+
+	"github.com/darrenvechain/thor-go-sdk/solo"
+	"github.com/darrenvechain/thor-go-sdk/thorgo"
+	"github.com/darrenvechain/thor-go-sdk/txmanager"
+	"github.com/ethereum/go-ethereum/accounts/abi"
+	"github.com/ethereum/go-ethereum/common"
+)
+
+func main() {
+	thor, _ := thorgo.FromURL("http://localhost:8669")
+
+	// Load a contract
+	contractABI, _ := abi.JSON(strings.NewReader(vthoABI))
+	vtho := thor.Account(common.HexToAddress("0x0000000000000000000000000000456e65726779")).Contract(&contractABI)
+
+	// Create a delegated transaction manager
+	origin := txmanager.FromPK(solo.Keys()[0], thor)
+	gasPayer := txmanager.NewDelegator(solo.Keys()[1])
+	txSender := txmanager.NewDelegatedManager(thor, origin, gasPayer)
+
+	// Create a new account to receive the tokens
+	recipient, _ := txmanager.GeneratePK(thor)
+	recipientBalance := new(big.Int)
+
+	// Call the balanceOf function
+	err := vtho.Call("balanceOf", &recipientBalance, recipient.Address())
+	slog.Info("recipient balance before", "balance", recipientBalance, "error", err)
+
+	// Send 1000 tokens to the recipient
+	tx, _ := vtho.Send(txSender, "transfer", recipient.Address(), big.NewInt(1000))
+	receipt, _ := tx.Wait()
+	slog.Info("receipt", "txID", receipt.Meta.TxID, "reverted", receipt.Reverted)
+
+	// Call the balanceOf function again
+	err = vtho.Call("balanceOf", &recipientBalance, recipient.Address())
+	slog.Info("recipient balance after", "balance", recipientBalance, "error", err)
+}
+
+var (
+	vthoABI = `[
+		{
+			"constant": true,
+			"inputs": [{"internalType": "address", "name": "account", "type": "address"}],
+			"name": "balanceOf",
+			"outputs": [{"internalType": "uint256", "name": "", "type": "uint256"}],
+			"stateMutability": "view",
+			"type": "function"
+		},
+		{
+			"constant": false,
+			"inputs": [
+				{"internalType": "address", "name": "recipient", "type": "address"},
+				{"internalType": "uint256", "name": "amount", "type": "uint256"}
+			],
+			"name": "transfer",
+			"outputs": [{"internalType": "bool", "name": "", "type": "bool"}],
+			"stateMutability": "nonpayable",
+			"type": "function"
+		}
+	]`
+)
 ```
