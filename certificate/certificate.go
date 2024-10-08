@@ -3,7 +3,6 @@ package certificate
 import (
 	"encoding/json"
 	"fmt"
-	"strings"
 
 	"github.com/darrenvechain/thor-go-sdk/hash"
 	"github.com/ethereum/go-ethereum/common"
@@ -45,5 +44,5 @@ func (c *Certificate) Verify(signature []byte) bool {
 	if err != nil {
 		return false
 	}
-	return strings.ToLower(crypto.PubkeyToAddress(*pubkey).Hex()) == strings.ToLower(c.Signer)
+	return crypto.PubkeyToAddress(*pubkey) == common.HexToAddress(c.Signer)
 }
