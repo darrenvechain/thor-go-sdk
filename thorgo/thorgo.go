@@ -8,6 +8,7 @@ import (
 	"github.com/darrenvechain/thor-go-sdk/thorgo/transactions"
 	"github.com/darrenvechain/thor-go-sdk/thorgo/transfers"
 	"github.com/darrenvechain/thor-go-sdk/transaction"
+	"github.com/ethereum/go-ethereum/accounts/abi"
 	"github.com/ethereum/go-ethereum/common"
 )
 
@@ -47,4 +48,9 @@ func (t *Thor) Events(criteria []client.EventCriteria) *events.Filter {
 
 func (t *Thor) Transfers(criteria []client.TransferCriteria) *transfers.Filter {
 	return transfers.New(t.Client, criteria)
+}
+
+// Deployer creates a new contract deployer.
+func (t *Thor) Deployer(bytecode []byte, abi *abi.ABI) *accounts.Deployer {
+	return accounts.NewDeployer(t.Client, bytecode, abi)
 }

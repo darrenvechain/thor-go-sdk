@@ -41,7 +41,12 @@ func (c *Contract) Call(method string, value interface{}, args ...interface{}) e
 	request := client.InspectRequest{
 		Clauses: []*transaction.Clause{clause},
 	}
-	response, err := c.client.Inspect(request)
+	var response []client.InspectResponse
+	if c.revision == nil {
+		response, err = c.client.Inspect(request)
+	} else {
+		response, err = c.client.InspectAt(request, *c.revision)
+	}
 	if err != nil {
 		return fmt.Errorf("failed to inspect contract: %w", err)
 	}
