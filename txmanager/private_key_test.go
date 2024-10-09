@@ -4,8 +4,8 @@ import (
 	"math/big"
 	"testing"
 
+	"github.com/darrenvechain/thor-go-sdk/crypto/transaction"
 	"github.com/darrenvechain/thor-go-sdk/thorgo"
-	"github.com/darrenvechain/thor-go-sdk/transaction"
 	"github.com/stretchr/testify/assert"
 )
 

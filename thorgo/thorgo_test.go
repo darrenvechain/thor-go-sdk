@@ -44,8 +44,8 @@ func TestGetAccount(t *testing.T) {
 	assert.NoError(t, err, "Account.httpGet should not return an error")
 	assert.NotNil(t, acc, "Account.httpGet should return an account")
 
-	assert.Greater(t, acc.Balance.Uint64(), uint64(0))
-	assert.Greater(t, acc.Energy.Uint64(), uint64(0))
+	assert.Greater(t, acc.Balance.ToInt().Uint64(), uint64(0))
+	assert.Greater(t, acc.Energy.ToInt().Uint64(), uint64(0))
 	assert.False(t, acc.HasCode)
 }
 

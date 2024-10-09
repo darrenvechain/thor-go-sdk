@@ -2,12 +2,12 @@ package thorgo
 
 import (
 	"github.com/darrenvechain/thor-go-sdk/client"
+	"github.com/darrenvechain/thor-go-sdk/crypto/transaction"
 	"github.com/darrenvechain/thor-go-sdk/thorgo/accounts"
 	"github.com/darrenvechain/thor-go-sdk/thorgo/blocks"
 	"github.com/darrenvechain/thor-go-sdk/thorgo/events"
 	"github.com/darrenvechain/thor-go-sdk/thorgo/transactions"
 	"github.com/darrenvechain/thor-go-sdk/thorgo/transfers"
-	"github.com/darrenvechain/thor-go-sdk/transaction"
 	"github.com/ethereum/go-ethereum/accounts/abi"
 	"github.com/ethereum/go-ethereum/common"
 )
@@ -38,8 +38,8 @@ func (t *Thor) Transaction(hash common.Hash) *transactions.Visitor {
 	return transactions.New(t.Client, hash)
 }
 
-func (t *Thor) TxBuilder(clauses []*transaction.Clause, caller common.Address) *transactions.Builder {
-	return transactions.NewBuilder(t.Client, clauses, caller)
+func (t *Thor) Transactor(clauses []*transaction.Clause, caller common.Address) *transactions.Transactor {
+	return transactions.NewTransactor(t.Client, clauses, caller)
 }
 
 func (t *Thor) Events(criteria []client.EventCriteria) *events.Filter {

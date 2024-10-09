@@ -11,7 +11,8 @@ import (
 	"math/rand"
 	"testing"
 
-	hash2 "github.com/darrenvechain/thor-go-sdk/hash"
+	hash2 "github.com/darrenvechain/thor-go-sdk/crypto/hash"
+
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/stretchr/testify/assert"
 	"golang.org/x/crypto/sha3"

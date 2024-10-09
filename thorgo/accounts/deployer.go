@@ -6,8 +6,8 @@ import (
 	"math/big"
 
 	"github.com/darrenvechain/thor-go-sdk/client"
+	"github.com/darrenvechain/thor-go-sdk/crypto/transaction"
 	"github.com/darrenvechain/thor-go-sdk/thorgo/transactions"
-	"github.com/darrenvechain/thor-go-sdk/transaction"
 	"github.com/ethereum/go-ethereum/accounts/abi"
 	"github.com/ethereum/go-ethereum/common"
 )

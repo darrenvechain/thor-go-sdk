@@ -1,15 +1,15 @@
 package client
 
 import (
-	"github.com/darrenvechain/thor-go-sdk/hex"
-	"github.com/darrenvechain/thor-go-sdk/transaction"
+	"github.com/darrenvechain/thor-go-sdk/crypto/transaction"
 	"github.com/ethereum/go-ethereum/common"
+	"github.com/ethereum/go-ethereum/common/hexutil"
 )
 
 type Account struct {
-	Balance hex.Int `json:"balance"`
-	Energy  hex.Int `json:"energy"`
-	HasCode bool    `json:"hasCode"`
+	Balance hexutil.Big `json:"balance"`
+	Energy  hexutil.Big `json:"energy"`
+	HasCode bool        `json:"hasCode"`
 }
 
 type AccountCode struct {

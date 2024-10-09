@@ -8,8 +8,8 @@ import (
 	"fmt"
 	"net/http"
 
+	"github.com/darrenvechain/thor-go-sdk/crypto/transaction"
 	"github.com/darrenvechain/thor-go-sdk/thorgo"
-	"github.com/darrenvechain/thor-go-sdk/transaction"
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/crypto"
 )
@@ -30,7 +30,7 @@ func NewDelegatedManager(thor *thorgo.Thor, origin Signer, gasPayer Delegator) *
 }
 
 func (d *DelegatedManager) SendClauses(clauses []*transaction.Clause) (common.Hash, error) {
-	tx, err := d.thor.TxBuilder(clauses, d.Address()).Delegate().Build()
+	tx, err := d.thor.Transactor(clauses, d.Address()).Delegate().Build()
 	if err != nil {
 		return common.Hash{}, fmt.Errorf("failed to build transaction: %w", err)
 	}

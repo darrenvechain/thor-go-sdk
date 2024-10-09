@@ -15,7 +15,7 @@ import (
 	"math/big"
 	"sync/atomic"
 
-	"github.com/darrenvechain/thor-go-sdk/hash"
+	"github.com/darrenvechain/thor-go-sdk/crypto/hash"
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/common/math"
 	"github.com/ethereum/go-ethereum/crypto"

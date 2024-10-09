@@ -9,9 +9,9 @@ import (
 	"testing"
 
 	"github.com/darrenvechain/thor-go-sdk/builtins"
+	"github.com/darrenvechain/thor-go-sdk/crypto/transaction"
 	"github.com/darrenvechain/thor-go-sdk/solo"
 	"github.com/darrenvechain/thor-go-sdk/thorgo"
-	"github.com/darrenvechain/thor-go-sdk/transaction"
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/crypto"
 	"github.com/stretchr/testify/assert"
@@ -31,7 +31,7 @@ func TestPKDelegator(t *testing.T) {
 	delegator := NewDelegator(solo.Keys()[1])
 
 	clause := transaction.NewClause(&common.Address{}).WithValue(new(big.Int))
-	tx, err := thor.TxBuilder([]*transaction.Clause{clause}, origin.Address()).Delegate().Build()
+	tx, err := thor.Transactor([]*transaction.Clause{clause}, origin.Address()).Delegate().Build()
 	assert.NoError(t, err)
 
 	delegatorSignature, err := delegator.Delegate(tx, origin.Address())
@@ -87,7 +87,7 @@ func TestNewUrlDelegator(t *testing.T) {
 	delegator := NewUrlDelegator(server.URL)
 
 	clause := transaction.NewClause(&common.Address{}).WithValue(new(big.Int))
-	tx, err := thor.TxBuilder([]*transaction.Clause{clause}, origin.Address()).Delegate().Build()
+	tx, err := thor.Transactor([]*transaction.Clause{clause}, origin.Address()).Delegate().Build()
 	assert.NoError(t, err)
 
 	delegatorSignature, err := delegator.Delegate(tx, origin.Address())

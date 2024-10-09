@@ -1,7 +1,7 @@
 package txmanager
 
 import (
-	"github.com/darrenvechain/thor-go-sdk/transaction"
+	"github.com/darrenvechain/thor-go-sdk/crypto/transaction"
 	"github.com/ethereum/go-ethereum/common"
 )
 

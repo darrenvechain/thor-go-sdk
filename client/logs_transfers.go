@@ -1,14 +1,14 @@
 package client
 
 import (
-	"github.com/darrenvechain/thor-go-sdk/hex"
 	"github.com/ethereum/go-ethereum/common"
+	"github.com/ethereum/go-ethereum/common/hexutil"
 )
 
 type TransferLog struct {
 	Sender    common.Address `json:"sender"`
 	Recipient common.Address `json:"recipient"`
-	Amount    hex.Int        `json:"amount"`
+	Amount    hexutil.Big    `json:"amount"`
 	Meta      LogMeta        `json:"meta"`
 }
 

@@ -1,11 +1,9 @@
 package client
 
 import (
-	"math/big"
 	"strings"
 	"testing"
 
-	"github.com/darrenvechain/thor-go-sdk/hex"
 	"github.com/darrenvechain/thor-go-sdk/solo"
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/stretchr/testify/assert"
@@ -14,8 +12,9 @@ import (
 func TestClient_Account(t *testing.T) {
 	acc, err := client.Account(common.HexToAddress("0xd1d37b8913563fC25BC5bB2E669eB3dBC6b87762"))
 	assert.NoError(t, err)
-	assert.Equal(t, hex.Int{Int: big.NewInt(0)}.Int64(), acc.Balance.Int64())
-	assert.Equal(t, hex.Int{Int: big.NewInt(0)}.Int64(), acc.Energy.Int64())
+
+	assert.Zero(t, acc.Balance.ToInt().Int64())
+	assert.Zero(t, acc.Energy.ToInt().Int64())
 	assert.False(t, acc.HasCode)
 }
 
@@ -26,8 +25,8 @@ func TestClient_AccountAt(t *testing.T) {
 	)
 
 	assert.NoError(t, err)
-	assert.Equal(t, hex.Int{Int: big.NewInt(0)}.Int64(), acc.Balance.Int64())
-	assert.Equal(t, hex.Int{Int: big.NewInt(0)}.Int64(), acc.Energy.Int64())
+	assert.Equal(t, int64(0), acc.Balance.ToInt().Int64())
+	assert.Equal(t, int64(0), acc.Energy.ToInt().Int64())
 	assert.False(t, acc.HasCode)
 }
 

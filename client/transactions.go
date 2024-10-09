@@ -1,9 +1,9 @@
 package client
 
 import (
-	"github.com/darrenvechain/thor-go-sdk/hex"
-	"github.com/darrenvechain/thor-go-sdk/transaction"
+	"github.com/darrenvechain/thor-go-sdk/crypto/transaction"
 	"github.com/ethereum/go-ethereum/common"
+	"github.com/ethereum/go-ethereum/common/hexutil"
 )
 
 type SendTransactionResponse struct {
@@ -18,8 +18,8 @@ type RawTransaction struct {
 type TransactionReceipt struct {
 	GasUsed  uint64         `json:"gasUsed"`
 	GasPayer common.Address `json:"gasPayer"`
-	Paid     *hex.Int       `json:"paid"`
-	Reward   *hex.Int       `json:"reward"`
+	Paid     *hexutil.Big   `json:"paid"`
+	Reward   *hexutil.Big   `json:"reward"`
 	Reverted bool           `json:"reverted"`
 	Meta     ReceiptMeta    `json:"meta"`
 	Outputs  []Output       `json:"outputs"`
@@ -35,7 +35,7 @@ type Transaction struct {
 	Gas          uint64               `json:"gas"`
 	Origin       common.Address       `json:"origin"`
 	Delegator    *common.Address      `json:"delegator"`
-	Nonce        hex.Int              `json:"nonce"`
+	Nonce        hexutil.Big          `json:"nonce"`
 	DependsOn    *common.Hash         `json:"dependsOn"`
 	Size         uint64               `json:"size"`
 	Meta         TxMeta               `json:"meta"`
@@ -44,7 +44,7 @@ type Transaction struct {
 type Transfer struct {
 	Sender    common.Address `json:"sender"`
 	Recipient common.Address `json:"recipient"`
-	Amount    *hex.Int       `json:"amount"`
+	Amount    *hexutil.Big   `json:"amount"`
 }
 
 type Output struct {

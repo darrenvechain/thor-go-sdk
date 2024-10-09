@@ -4,11 +4,11 @@ import (
 	"fmt"
 
 	"github.com/darrenvechain/thor-go-sdk/client"
-	"github.com/darrenvechain/thor-go-sdk/transaction"
+	"github.com/darrenvechain/thor-go-sdk/crypto/transaction"
 	"github.com/ethereum/go-ethereum/common"
 )
 
-type Builder struct {
+type Transactor struct {
 	client   *client.Client
 	clauses  []*transaction.Clause
 	builder  *transaction.Builder
@@ -16,9 +16,9 @@ type Builder struct {
 	gasPayer *common.Address
 }
 
-func NewBuilder(client *client.Client, clauses []*transaction.Clause, caller common.Address) *Builder {
+func NewTransactor(client *client.Client, clauses []*transaction.Clause, caller common.Address) *Transactor {
 	builder := new(transaction.Builder)
-	return &Builder{
+	return &Transactor{
 		client:  client,
 		clauses: clauses,
 		caller:  caller,
@@ -27,65 +27,65 @@ func NewBuilder(client *client.Client, clauses []*transaction.Clause, caller com
 }
 
 // GasPayer sets the gas payer for the transaction. This is used to simulate the transaction.
-func (b *Builder) GasPayer(payer common.Address) *Builder {
-	b.gasPayer = &payer
-	return b
+func (t *Transactor) GasPayer(payer common.Address) *Transactor {
+	t.gasPayer = &payer
+	return t
 }
 
 // Gas sets the gas provision for the transaction. If not set, it will be estimated.
-func (b *Builder) Gas(gas uint64) *Builder {
-	b.builder.Gas(gas)
-	return b
+func (t *Transactor) Gas(gas uint64) *Transactor {
+	t.builder.Gas(gas)
+	return t
 }
 
 // GasPriceCoef sets the gas price coefficient. Defaults to 0 if not set.
-func (b *Builder) GasPriceCoef(coef uint8) *Builder {
-	b.builder.GasPriceCoef(coef)
-	return b
+func (t *Transactor) GasPriceCoef(coef uint8) *Transactor {
+	t.builder.GasPriceCoef(coef)
+	return t
 }
 
 // Expiration sets the expiration block count. Defaults to 30 blocks (5 minutes) if not set.
-func (b *Builder) Expiration(exp uint32) *Builder {
-	b.builder.Expiration(exp)
-	return b
+func (t *Transactor) Expiration(exp uint32) *Transactor {
+	t.builder.Expiration(exp)
+	return t
 }
 
 // Nonce sets the nonce. Defaults to a random value if not set.
-func (b *Builder) Nonce(nonce uint64) *Builder {
-	b.builder.Nonce(nonce)
-	return b
+func (t *Transactor) Nonce(nonce uint64) *Transactor {
+	t.builder.Nonce(nonce)
+	return t
 }
 
 // BlockRef sets the block reference. Defaults to the "best" block reference if not set.
-func (b *Builder) BlockRef(br transaction.BlockRef) *Builder {
-	b.builder.BlockRef(br)
-	return b
+func (t *Transactor) BlockRef(br transaction.BlockRef) *Transactor {
+	t.builder.BlockRef(br)
+	return t
 }
 
 // DependsOn sets the dependent transaction ID. Defaults to nil if not set.
-func (b *Builder) DependsOn(txID *common.Hash) *Builder {
-	b.builder.DependsOn(txID)
-	return b
+func (t *Transactor) DependsOn(txID *common.Hash) *Transactor {
+	t.builder.DependsOn(txID)
+	return t
 }
 
 // Delegate enables transaction delegation. If not set, it will be nil.
-func (b *Builder) Delegate() *Builder {
-	b.builder.Features(transaction.DelegationFeature)
-	return b
+func (t *Transactor) Delegate() *Transactor {
+	t.builder.Features(transaction.DelegationFeature)
+	return t
 }
 
 // Simulate estimates the gas usage and checks for errors or reversion in the transaction.
-func (b *Builder) Simulate() (Simulation, error) {
+func (t *Transactor) Simulate() (Simulation, error) {
 	request := client.InspectRequest{
-		Clauses: b.clauses,
-		Caller:  &b.caller,
+		Clauses: t.clauses,
+		Caller:  &t.caller,
 	}
 
-	if b.gasPayer != nil {
-		request.GasPayer = b.gasPayer
+	if t.gasPayer != nil {
+		request.GasPayer = t.gasPayer
 	}
 
-	response, err := b.client.Inspect(request)
+	response, err := t.client.Inspect(request)
 	if err != nil {
 		return Simulation{}, err
 	}
@@ -97,7 +97,7 @@ func (b *Builder) Simulate() (Simulation, error) {
 		consumedGas += res.GasUsed
 	}
 
-	intrinsicGas, err := transaction.IntrinsicGas(b.clauses...)
+	intrinsicGas, err := transaction.IntrinsicGas(t.clauses...)
 	if err != nil {
 		return Simulation{}, err
 	}
@@ -112,9 +112,9 @@ func (b *Builder) Simulate() (Simulation, error) {
 }
 
 // Build constructs the transaction, applying defaults where necessary.
-func (b *Builder) Build() (*transaction.Transaction, error) {
-	unsanitized := b.builder.Build()
-	chainTag := b.client.ChainTag()
+func (t *Transactor) Build() (*transaction.Transaction, error) {
+	unsanitized := t.builder.Build()
+	chainTag := t.client.ChainTag()
 
 	builder := new(transaction.Builder).
 		GasPriceCoef(unsanitized.GasPriceCoef()).
@@ -122,13 +122,13 @@ func (b *Builder) Build() (*transaction.Transaction, error) {
 		Features(unsanitized.Features()).
 		DependsOn(unsanitized.DependsOn())
 
-	for _, clause := range b.clauses {
+	for _, clause := range t.clauses {
 		builder.Clause(clause)
 	}
 
 	// Set gas
 	if unsanitized.Gas() == 0 {
-		simulation, err := b.Simulate()
+		simulation, err := t.Simulate()
 		if err != nil {
 			return nil, err
 		}
@@ -139,7 +139,7 @@ func (b *Builder) Build() (*transaction.Transaction, error) {
 
 	// Set block reference
 	if unsanitized.BlockRef().Number() == 0 {
-		best, err := b.client.BestBlock()
+		best, err := t.client.BestBlock()
 		if err != nil {
 			return nil, err
 		}
@@ -169,8 +169,8 @@ type TxSigner interface {
 	SignTransaction(tx *transaction.Transaction) ([]byte, error)
 }
 
-func (b *Builder) Send(signer TxSigner) (*Visitor, error) {
-	tx, err := b.Build()
+func (t *Transactor) Send(signer TxSigner) (*Visitor, error) {
+	tx, err := t.Build()
 	if err != nil {
 		return nil, fmt.Errorf("failed to build transaction: %w", err)
 	}
@@ -181,10 +181,10 @@ func (b *Builder) Send(signer TxSigner) (*Visitor, error) {
 	}
 	tx = tx.WithSignature(signature)
 
-	res, err := b.client.SendTransaction(tx)
+	res, err := t.client.SendTransaction(tx)
 	if err != nil {
 		return nil, fmt.Errorf("failed to send transaction: %w", err)
 	}
 
-	return New(b.client, res.ID), nil
+	return New(t.client, res.ID), nil
 }

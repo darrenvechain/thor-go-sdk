@@ -1,9 +1,9 @@
 package client
 
 import (
-	"github.com/darrenvechain/thor-go-sdk/hex"
-	"github.com/darrenvechain/thor-go-sdk/transaction"
+	"github.com/darrenvechain/thor-go-sdk/crypto/transaction"
 	"github.com/ethereum/go-ethereum/common"
+	"github.com/ethereum/go-ethereum/common/hexutil"
 )
 
 type Block struct {
@@ -45,13 +45,13 @@ type BlockTransaction struct {
 	Gas          uint64               `json:"gas"`
 	Origin       common.Address       `json:"origin"`
 	Delegator    *common.Address      `json:"delegator,omitempty"`
-	Nonce        hex.Int              `json:"nonce"`
+	Nonce        hexutil.Big          `json:"nonce"`
 	DependsOn    *common.Hash         `json:"dependsOn,omitempty"`
 	Size         uint64               `json:"size"`
 	GasUsed      uint64               `json:"gasUsed"`
 	GasPayer     common.Address       `json:"gasPayer"`
-	Paid         hex.Int              `json:"paid"`
-	Reward       hex.Int              `json:"reward"`
+	Paid         hexutil.Big          `json:"paid"`
+	Reward       hexutil.Big          `json:"reward"`
 	Reverted     bool                 `json:"reverted"`
 	Outputs      []Output             `json:"outputs"`
 }
