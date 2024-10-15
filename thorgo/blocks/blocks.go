@@ -26,7 +26,7 @@ func (b *Blocks) Best() (block *client.Block, err error) {
 	// Load the best block from the cache.
 	if best, ok := b.best.Load().(*client.Block); ok {
 		// Convert the timestamp to UTC time.
-		bestTime := time.Unix(int64(best.Timestamp), 0).UTC()
+		bestTime := time.Unix(best.Timestamp, 0).UTC()
 		if time.Since(bestTime) < 10*time.Second {
 			return best, nil
 		}
@@ -59,7 +59,7 @@ func (b *Blocks) WaitForNext() (*client.Block, error) {
 	}
 
 	// Sleep until the current block + 10 seconds
-	predictedTime := time.Unix(int64(best.Timestamp), 0).Add(10 * time.Second)
+	predictedTime := time.Unix(best.Timestamp, 0).Add(10 * time.Second)
 	time.Sleep(time.Until(predictedTime))
 
 	for i := 0; i < 40; i++ {

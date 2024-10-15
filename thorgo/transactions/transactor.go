@@ -2,6 +2,7 @@ package transactions
 
 import (
 	"fmt"
+	"math"
 
 	"github.com/darrenvechain/thor-go-sdk/client"
 	"github.com/darrenvechain/thor-go-sdk/crypto/transaction"
@@ -100,6 +101,10 @@ func (t *Transactor) Simulate() (Simulation, error) {
 	intrinsicGas, err := transaction.IntrinsicGas(t.clauses...)
 	if err != nil {
 		return Simulation{}, err
+	}
+
+	if intrinsicGas > math.MaxInt64 {
+		return Simulation{}, fmt.Errorf("intrinsic gas exceeds maximum int64")
 	}
 
 	return Simulation{

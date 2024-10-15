@@ -32,7 +32,7 @@ func (f *Filter) Ascending() *Filter {
 	return f
 }
 
-func (f *Filter) BlockRange(from uint64, to uint64) *Filter {
+func (f *Filter) BlockRange(from int64, to int64) *Filter {
 	f.request.Range = &client.FilterRange{
 		From: &from,
 		To:   &to,
@@ -41,7 +41,7 @@ func (f *Filter) BlockRange(from uint64, to uint64) *Filter {
 	return f
 }
 
-func (f *Filter) TimeRange(from uint64, to uint64) *Filter {
+func (f *Filter) TimeRange(from int64, to int64) *Filter {
 	f.request.Range = &client.FilterRange{
 		From: &from,
 		To:   &to,
@@ -50,7 +50,7 @@ func (f *Filter) TimeRange(from uint64, to uint64) *Filter {
 	return f
 }
 
-func (f *Filter) Apply(offset uint64, limit uint64) ([]client.EventLog, error) {
+func (f *Filter) Apply(offset int64, limit int64) ([]client.EventLog, error) {
 	f.request.Options = &client.FilterOptions{
 		Offset: &offset,
 		Limit:  &limit,

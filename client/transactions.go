@@ -16,7 +16,7 @@ type RawTransaction struct {
 }
 
 type TransactionReceipt struct {
-	GasUsed  uint64         `json:"gasUsed"`
+	GasUsed  int64          `json:"gasUsed"`
 	GasPayer common.Address `json:"gasPayer"`
 	Paid     *hexutil.Big   `json:"paid"`
 	Reward   *hexutil.Big   `json:"reward"`
@@ -27,17 +27,17 @@ type TransactionReceipt struct {
 
 type Transaction struct {
 	ID           common.Hash          `json:"id"`
-	ChainTag     uint64               `json:"chainTag"`
+	ChainTag     int64                `json:"chainTag"`
 	BlockRef     transaction.BlockRef `json:"blockRef"`
-	Expiration   uint64               `json:"expiration"`
+	Expiration   int64                `json:"expiration"`
 	Clauses      []transaction.Clause `json:"clauses"`
-	GasPriceCoef uint64               `json:"gasPriceCoef"`
-	Gas          uint64               `json:"gas"`
+	GasPriceCoef int64                `json:"gasPriceCoef"`
+	Gas          int64                `json:"gas"`
 	Origin       common.Address       `json:"origin"`
 	Delegator    *common.Address      `json:"delegator"`
 	Nonce        hexutil.Big          `json:"nonce"`
 	DependsOn    *common.Hash         `json:"dependsOn"`
-	Size         uint64               `json:"size"`
+	Size         int64                `json:"size"`
 	Meta         TxMeta               `json:"meta"`
 }
 
@@ -61,14 +61,14 @@ type Event struct {
 
 type ReceiptMeta struct {
 	BlockID        common.Hash    `json:"blockID"`
-	BlockNumber    uint64         `json:"blockNumber"`
-	BlockTimestamp uint64         `json:"blockTimestamp"`
+	BlockNumber    int64          `json:"blockNumber"`
+	BlockTimestamp int64          `json:"blockTimestamp"`
 	TxID           common.Hash    `json:"txID"`
 	TxOrigin       common.Address `json:"txOrigin"`
 }
 
 type TxMeta struct {
 	BlockID        common.Hash `json:"blockID"`
-	BlockNumber    uint64      `json:"blockNumber"`
-	BlockTimestamp uint64      `json:"blockTimestamp"`
+	BlockNumber    int64       `json:"blockNumber"`
+	BlockTimestamp int64       `json:"blockTimestamp"`
 }

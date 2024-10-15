@@ -7,17 +7,17 @@ import (
 )
 
 type Block struct {
-	Number       uint64         `json:"number"`
+	Number       int64          `json:"number"`
 	ID           common.Hash    `json:"id"`
-	Size         uint64         `json:"size"`
+	Size         int64          `json:"size"`
 	ParentID     common.Hash    `json:"parentID"`
-	Timestamp    uint64         `json:"timestamp"`
-	GasLimit     uint64         `json:"gasLimit"`
+	Timestamp    int64          `json:"timestamp"`
+	GasLimit     int64          `json:"gasLimit"`
 	Beneficiary  common.Address `json:"beneficiary"`
-	GasUsed      uint64         `json:"gasUsed"`
-	TotalScore   uint64         `json:"totalScore"`
+	GasUsed      int64          `json:"gasUsed"`
+	TotalScore   int64          `json:"totalScore"`
 	TxsRoot      common.Hash    `json:"txsRoot"`
-	TxsFeatures  uint64         `json:"txsFeatures"`
+	TxsFeatures  int64          `json:"txsFeatures"`
 	StateRoot    common.Hash    `json:"stateRoot"`
 	ReceiptsRoot common.Hash    `json:"receiptsRoot"`
 	Com          bool           `json:"com"`
@@ -39,16 +39,16 @@ type BlockTransaction struct {
 	ID           common.Hash          `json:"id"`
 	ChainTag     byte                 `json:"chainTag"`
 	BlockRef     transaction.BlockRef `json:"blockRef"`
-	Expiration   uint64               `json:"expiration"`
+	Expiration   int64                `json:"expiration"`
 	Clauses      []transaction.Clause `json:"clauses"`
-	GasPriceCoef uint64               `json:"gasPriceCoef"`
-	Gas          uint64               `json:"gas"`
+	GasPriceCoef int64                `json:"gasPriceCoef"`
+	Gas          int64                `json:"gas"`
 	Origin       common.Address       `json:"origin"`
 	Delegator    *common.Address      `json:"delegator,omitempty"`
 	Nonce        hexutil.Big          `json:"nonce"`
 	DependsOn    *common.Hash         `json:"dependsOn,omitempty"`
-	Size         uint64               `json:"size"`
-	GasUsed      uint64               `json:"gasUsed"`
+	Size         int64                `json:"size"`
+	GasUsed      int64                `json:"gasUsed"`
 	GasPayer     common.Address       `json:"gasPayer"`
 	Paid         hexutil.Big          `json:"paid"`
 	Reward       hexutil.Big          `json:"reward"`
