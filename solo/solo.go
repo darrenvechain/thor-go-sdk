@@ -2,8 +2,8 @@ package solo
 
 import (
 	"crypto/ecdsa"
-	"github.com/darrenvechain/thor-go-sdk/crypto/hdwallet"
 
+	"github.com/darrenvechain/thor-go-sdk/crypto/hdwallet"
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/crypto"
 )

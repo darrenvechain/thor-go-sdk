@@ -285,7 +285,7 @@ func BenchmarkTxMining(b *testing.B) {
 	maxWork := &big.Int{}
 	eval := tx.EvaluateWork(signer)
 	for i := 0; i < b.N; i++ {
-		work := eval(uint64(i))
+		work := eval(uint64(i)) // nolint:gosec
 		if work.Cmp(maxWork) > 0 {
 			maxWork = work
 		}
