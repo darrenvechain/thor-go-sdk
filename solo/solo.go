@@ -2,6 +2,7 @@ package solo
 
 import (
 	"crypto/ecdsa"
+	"github.com/darrenvechain/thor-go-sdk/crypto/hdwallet"
 
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/crypto"
@@ -47,10 +48,22 @@ func ChainTag() byte {
 	return genesisId[len(genesisId)-1]
 }
 
+func Mnemonic() *hdwallet.Wallet {
+	return mustParseMnemonic("denial kitchen pet squirrel other broom bar gas better priority spoil cross")
+}
+
 func mustParseKey(s string) *ecdsa.PrivateKey {
 	key, err := crypto.HexToECDSA(s)
 	if err != nil {
 		panic(err)
 	}
 	return key
+}
+
+func mustParseMnemonic(s string) *hdwallet.Wallet {
+	wallet, err := hdwallet.FromMnemonic(s)
+	if err != nil {
+		panic(err)
+	}
+	return wallet
 }

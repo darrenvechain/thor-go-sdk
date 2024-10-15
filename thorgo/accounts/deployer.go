@@ -29,13 +29,11 @@ func (d *Deployer) WithValue(value *big.Int) *Deployer {
 }
 
 func (d *Deployer) Deploy(sender TxManager, args ...interface{}) (*Contract, common.Hash, error) {
-	contractArgs, err := d.abi.Pack("", args...)
+	clause, err := d.AsClause(args...)
 	txID := common.Hash{}
 	if err != nil {
 		return nil, txID, fmt.Errorf("failed to pack contract arguments: %w", err)
 	}
-	bytecode := append(d.bytecode, contractArgs...)
-	clause := transaction.NewClause(nil).WithData(bytecode).WithValue(d.value)
 	txID, err = sender.SendClauses([]*transaction.Clause{clause})
 	if err != nil {
 		return nil, txID, fmt.Errorf("failed to send contract deployment transaction: %w", err)
@@ -51,4 +49,15 @@ func (d *Deployer) Deploy(sender TxManager, args ...interface{}) (*Contract, com
 	address := common.HexToAddress(receipt.Outputs[0].ContractAddress)
 
 	return NewContract(d.client, address, d.abi, nil), txID, nil
+}
+
+// AsClause returns the contract deployment clause.
+func (d *Deployer) AsClause(args ...interface{}) (*transaction.Clause, error) {
+	contractArgs, err := d.abi.Pack("", args...)
+	if err != nil {
+		return nil, fmt.Errorf("failed to pack contract arguments: %w", err)
+	}
+	bytecode := append(d.bytecode, contractArgs...)
+	clause := transaction.NewClause(nil).WithData(bytecode).WithValue(d.value)
+	return clause, nil
 }
