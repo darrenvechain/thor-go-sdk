@@ -4,7 +4,7 @@ import (
 	"github.com/darrenvechain/thorgo/accounts"
 	"github.com/darrenvechain/thorgo/blocks"
 	"github.com/darrenvechain/thorgo/client"
-	"github.com/darrenvechain/thorgo/crypto/transaction"
+	"github.com/darrenvechain/thorgo/crypto/tx"
 	"github.com/darrenvechain/thorgo/events"
 	"github.com/darrenvechain/thorgo/transactions"
 	"github.com/darrenvechain/thorgo/transfers"
@@ -42,7 +42,7 @@ func (t *Thor) Transaction(hash common.Hash) *transactions.Visitor {
 }
 
 // Transactor creates a new transaction builder which makes it easier to build, simulate, build and send transactions.
-func (t *Thor) Transactor(clauses []*transaction.Clause) *transactions.Transactor {
+func (t *Thor) Transactor(clauses []*tx.Clause) *transactions.Transactor {
 	return transactions.NewTransactor(t.Client, clauses)
 }
 

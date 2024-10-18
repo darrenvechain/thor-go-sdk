@@ -1,7 +1,7 @@
 package client
 
 import (
-	"github.com/darrenvechain/thorgo/crypto/transaction"
+	"github.com/darrenvechain/thorgo/crypto/tx"
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/common/hexutil"
 )
@@ -26,19 +26,19 @@ type TransactionReceipt struct {
 }
 
 type Transaction struct {
-	ID           common.Hash          `json:"id"`
-	ChainTag     int64                `json:"chainTag"`
-	BlockRef     transaction.BlockRef `json:"blockRef"`
-	Expiration   int64                `json:"expiration"`
-	Clauses      []transaction.Clause `json:"clauses"`
-	GasPriceCoef int64                `json:"gasPriceCoef"`
-	Gas          int64                `json:"gas"`
-	Origin       common.Address       `json:"origin"`
-	Delegator    *common.Address      `json:"delegator"`
-	Nonce        hexutil.Big          `json:"nonce"`
-	DependsOn    *common.Hash         `json:"dependsOn"`
-	Size         int64                `json:"size"`
-	Meta         TxMeta               `json:"meta"`
+	ID           common.Hash     `json:"id"`
+	ChainTag     int64           `json:"chainTag"`
+	BlockRef     tx.BlockRef     `json:"blockRef"`
+	Expiration   int64           `json:"expiration"`
+	Clauses      []tx.Clause     `json:"clauses"`
+	GasPriceCoef int64           `json:"gasPriceCoef"`
+	Gas          int64           `json:"gas"`
+	Origin       common.Address  `json:"origin"`
+	Delegator    *common.Address `json:"delegator"`
+	Nonce        hexutil.Big     `json:"nonce"`
+	DependsOn    *common.Hash    `json:"dependsOn"`
+	Size         int64           `json:"size"`
+	Meta         TxMeta          `json:"meta"`
 }
 
 type Transfer struct {

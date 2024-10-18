@@ -5,20 +5,20 @@ import (
 	"math"
 
 	"github.com/darrenvechain/thorgo/client"
-	"github.com/darrenvechain/thorgo/crypto/transaction"
+	"github.com/darrenvechain/thorgo/crypto/tx"
 	"github.com/ethereum/go-ethereum/common"
 )
 
 // Transactor is a transaction builder that can be used to simulate, build and send transactions.
 type Transactor struct {
 	client   *client.Client
-	clauses  []*transaction.Clause
-	builder  *transaction.Builder
+	clauses  []*tx.Clause
+	builder  *tx.Builder
 	gasPayer *common.Address
 }
 
-func NewTransactor(client *client.Client, clauses []*transaction.Clause) *Transactor {
-	builder := new(transaction.Builder)
+func NewTransactor(client *client.Client, clauses []*tx.Clause) *Transactor {
+	builder := new(tx.Builder)
 	return &Transactor{
 		client:  client,
 		clauses: clauses,
@@ -57,7 +57,7 @@ func (t *Transactor) Nonce(nonce uint64) *Transactor {
 }
 
 // BlockRef sets the block reference. Defaults to the "best" block reference if not set.
-func (t *Transactor) BlockRef(br transaction.BlockRef) *Transactor {
+func (t *Transactor) BlockRef(br tx.BlockRef) *Transactor {
 	t.builder.BlockRef(br)
 	return t
 }
@@ -70,7 +70,7 @@ func (t *Transactor) DependsOn(txID *common.Hash) *Transactor {
 
 // Delegate enables transaction delegation. If not set, it will be nil.
 func (t *Transactor) Delegate() *Transactor {
-	t.builder.Features(transaction.DelegationFeature)
+	t.builder.Features(tx.DelegationFeature)
 	return t
 }
 
@@ -97,7 +97,7 @@ func (t *Transactor) Simulate(caller common.Address) (Simulation, error) {
 		consumedGas += res.GasUsed
 	}
 
-	intrinsicGas, err := transaction.IntrinsicGas(t.clauses...)
+	intrinsicGas, err := tx.IntrinsicGas(t.clauses...)
 	if err != nil {
 		return Simulation{}, err
 	}
@@ -116,11 +116,11 @@ func (t *Transactor) Simulate(caller common.Address) (Simulation, error) {
 }
 
 // Build constructs the transaction, applying defaults where necessary.
-func (t *Transactor) Build(caller common.Address) (*transaction.Transaction, error) {
+func (t *Transactor) Build(caller common.Address) (*tx.Transaction, error) {
 	initial := t.builder.Build()
 	chainTag := t.client.ChainTag()
 
-	builder := new(transaction.Builder).
+	builder := new(tx.Builder).
 		GasPriceCoef(initial.GasPriceCoef()).
 		ChainTag(chainTag).
 		Features(initial.Features()).
@@ -159,14 +159,14 @@ func (t *Transactor) Build(caller common.Address) (*transaction.Transaction, err
 
 	// Set nonce
 	if initial.Nonce() == 0 {
-		builder.Nonce(transaction.Nonce())
+		builder.Nonce(tx.Nonce())
 	}
 
 	return builder.Build(), nil
 }
 
 type Signer interface {
-	SignTransaction(tx *transaction.Transaction) ([]byte, error)
+	SignTransaction(tx *tx.Transaction) ([]byte, error)
 	Address() common.Address
 }
 

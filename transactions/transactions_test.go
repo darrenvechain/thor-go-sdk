@@ -6,7 +6,7 @@ import (
 
 	"github.com/darrenvechain/thorgo"
 	"github.com/darrenvechain/thorgo/client"
-	"github.com/darrenvechain/thorgo/crypto/transaction"
+	"github.com/darrenvechain/thorgo/crypto/tx"
 	"github.com/darrenvechain/thorgo/solo"
 	"github.com/darrenvechain/thorgo/transactions"
 	"github.com/darrenvechain/thorgo/txmanager"
@@ -24,8 +24,8 @@ var (
 func TestTransactions(t *testing.T) {
 	// build a transaction
 	to := account2.Address()
-	vetClause := transaction.NewClause(&to).WithValue(big.NewInt(1000))
-	unsigned, err := transactions.NewTransactor(thorClient, []*transaction.Clause{vetClause}).Build(account1.Address())
+	vetClause := tx.NewClause(&to).WithValue(big.NewInt(1000))
+	unsigned, err := transactions.NewTransactor(thorClient, []*tx.Clause{vetClause}).Build(account1.Address())
 	assert.NoError(t, err)
 
 	// sign it

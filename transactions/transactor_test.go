@@ -4,7 +4,7 @@ import (
 	"math/big"
 	"testing"
 
-	"github.com/darrenvechain/thorgo/crypto/transaction"
+	"github.com/darrenvechain/thorgo/crypto/tx"
 
 	"github.com/darrenvechain/thorgo/solo"
 	"github.com/darrenvechain/thorgo/transactions"
@@ -22,8 +22,8 @@ func TestContractClause(t *testing.T) {
 	account2Addr := crypto.PubkeyToAddress(account2.PublicKey)
 
 	// transfer clause
-	clause := transaction.NewClause(&account2Addr).WithData([]byte{}).WithValue(big.NewInt(1000))
-	txbuilder := transactions.NewTransactor(thorClient, []*transaction.Clause{clause})
+	clause := tx.NewClause(&account2Addr).WithData([]byte{}).WithValue(big.NewInt(1000))
+	txbuilder := transactions.NewTransactor(thorClient, []*tx.Clause{clause})
 
 	// simulation
 	simulation, err := txbuilder.Simulate(account1Addr)

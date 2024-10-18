@@ -4,7 +4,7 @@ import (
 	"math/big"
 	"testing"
 
-	"github.com/darrenvechain/thorgo/crypto/transaction"
+	"github.com/darrenvechain/thorgo/crypto/tx"
 	"github.com/darrenvechain/thorgo/solo"
 	"github.com/ethereum/go-ethereum/crypto"
 	"github.com/stretchr/testify/assert"
@@ -15,16 +15,16 @@ func TestClient_SendTransaction(t *testing.T) {
 	account2 := solo.Keys()[1]
 	account2Addr := crypto.PubkeyToAddress(account2.PublicKey)
 
-	vetClause := transaction.NewClause(&account2Addr).
+	vetClause := tx.NewClause(&account2Addr).
 		WithValue(big.NewInt(1000))
 
-	txBody := new(transaction.Builder).
+	txBody := new(tx.Builder).
 		Gas(3_000_000).
 		GasPriceCoef(255).
 		ChainTag(client.ChainTag()).
 		Expiration(100000000).
-		BlockRef(transaction.NewBlockRef(0)).
-		Nonce(transaction.Nonce()).
+		BlockRef(tx.NewBlockRef(0)).
+		Nonce(tx.Nonce()).
 		Clause(vetClause).
 		Build()
 

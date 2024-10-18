@@ -6,7 +6,7 @@ import (
 
 	"github.com/darrenvechain/thorgo"
 	"github.com/darrenvechain/thorgo/accounts"
-	"github.com/darrenvechain/thorgo/crypto/transaction"
+	"github.com/darrenvechain/thorgo/crypto/tx"
 	"github.com/darrenvechain/thorgo/transactions"
 	"github.com/darrenvechain/thorgo/txmanager"
 	"github.com/stretchr/testify/assert"
@@ -31,14 +31,14 @@ func TestPKSigner(t *testing.T) {
 	to, err := txmanager.GeneratePK(thor)
 	assert.NoError(t, err)
 	toAddr := to.Address()
-	vetClause := transaction.NewClause(&toAddr).WithValue(big.NewInt(1000))
+	vetClause := tx.NewClause(&toAddr).WithValue(big.NewInt(1000))
 
-	tx := new(transaction.Builder).
+	tx := new(tx.Builder).
 		GasPriceCoef(1).
 		Gas(100000).
 		Clause(vetClause).
 		ChainTag(10).
-		BlockRef(transaction.NewBlockRef(100)).
+		BlockRef(tx.NewBlockRef(100)).
 		Build()
 
 	signature, err := signer.SignTransaction(tx)

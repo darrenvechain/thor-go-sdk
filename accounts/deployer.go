@@ -6,7 +6,7 @@ import (
 	"math/big"
 
 	"github.com/darrenvechain/thorgo/client"
-	"github.com/darrenvechain/thorgo/crypto/transaction"
+	"github.com/darrenvechain/thorgo/crypto/tx"
 	"github.com/darrenvechain/thorgo/transactions"
 	"github.com/ethereum/go-ethereum/accounts/abi"
 	"github.com/ethereum/go-ethereum/common"
@@ -34,7 +34,7 @@ func (d *Deployer) Deploy(sender TxManager, args ...interface{}) (*Contract, com
 	if err != nil {
 		return nil, txID, fmt.Errorf("failed to pack contract arguments: %w", err)
 	}
-	txID, err = sender.SendClauses([]*transaction.Clause{clause})
+	txID, err = sender.SendClauses([]*tx.Clause{clause})
 	if err != nil {
 		return nil, txID, fmt.Errorf("failed to send contract deployment transaction: %w", err)
 	}
@@ -52,12 +52,12 @@ func (d *Deployer) Deploy(sender TxManager, args ...interface{}) (*Contract, com
 }
 
 // AsClause returns the contract deployment clause.
-func (d *Deployer) AsClause(args ...interface{}) (*transaction.Clause, error) {
+func (d *Deployer) AsClause(args ...interface{}) (*tx.Clause, error) {
 	contractArgs, err := d.abi.Pack("", args...)
 	if err != nil {
 		return nil, fmt.Errorf("failed to pack contract arguments: %w", err)
 	}
 	bytecode := append(d.bytecode, contractArgs...)
-	clause := transaction.NewClause(nil).WithData(bytecode).WithValue(d.value)
+	clause := tx.NewClause(nil).WithData(bytecode).WithValue(d.value)
 	return clause, nil
 }

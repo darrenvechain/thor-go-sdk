@@ -4,7 +4,7 @@ import (
 	"crypto/ecdsa"
 
 	"github.com/darrenvechain/thorgo"
-	"github.com/darrenvechain/thorgo/crypto/transaction"
+	"github.com/darrenvechain/thorgo/crypto/tx"
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/crypto"
 )
@@ -35,7 +35,7 @@ func (p *PKManager) PublicKey() *ecdsa.PublicKey {
 	return &p.key.PublicKey
 }
 
-func (p *PKManager) SendClauses(clauses []*transaction.Clause) (common.Hash, error) {
+func (p *PKManager) SendClauses(clauses []*tx.Clause) (common.Hash, error) {
 	tx, err := p.thor.Transactor(clauses).Build(p.Address())
 	if err != nil {
 		return common.Hash{}, err
@@ -51,7 +51,7 @@ func (p *PKManager) SendClauses(clauses []*transaction.Clause) (common.Hash, err
 	return res.ID, nil
 }
 
-func (p *PKManager) SignTransaction(tx *transaction.Transaction) ([]byte, error) {
+func (p *PKManager) SignTransaction(tx *tx.Transaction) ([]byte, error) {
 	signature, err := crypto.Sign(tx.SigningHash().Bytes(), p.key)
 	if err != nil {
 		return nil, err

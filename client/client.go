@@ -7,7 +7,7 @@ import (
 	"net/http"
 	"strings"
 
-	"github.com/darrenvechain/thorgo/crypto/transaction"
+	"github.com/darrenvechain/thorgo/crypto/tx"
 	"github.com/ethereum/go-ethereum/common"
 )
 
@@ -135,7 +135,7 @@ func (c *Client) ChainTag() byte {
 }
 
 // SendTransaction sends a transaction to the node.
-func (c *Client) SendTransaction(tx *transaction.Transaction) (*SendTransactionResponse, error) {
+func (c *Client) SendTransaction(tx *tx.Transaction) (*SendTransactionResponse, error) {
 	body := make(map[string]string)
 	encoded, err := tx.Encoded()
 	if err != nil {

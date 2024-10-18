@@ -4,7 +4,7 @@ import (
 	"math/big"
 
 	"github.com/darrenvechain/thorgo/client"
-	"github.com/darrenvechain/thorgo/crypto/transaction"
+	"github.com/darrenvechain/thorgo/crypto/tx"
 	"github.com/ethereum/go-ethereum/accounts/abi"
 	"github.com/ethereum/go-ethereum/common"
 )
@@ -53,10 +53,10 @@ func (a *Visitor) Storage(key common.Hash) (*client.AccountStorage, error) {
 
 // Call executes a read-only contract call.
 func (a *Visitor) Call(calldata []byte) (*client.InspectResponse, error) {
-	clause := transaction.NewClause(&a.account).WithData(calldata).WithValue(big.NewInt(0))
+	clause := tx.NewClause(&a.account).WithData(calldata).WithValue(big.NewInt(0))
 
 	request := client.InspectRequest{
-		Clauses: []*transaction.Clause{clause},
+		Clauses: []*tx.Clause{clause},
 	}
 	var (
 		inspection []client.InspectResponse

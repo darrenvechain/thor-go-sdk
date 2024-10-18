@@ -1,7 +1,7 @@
 package client
 
 import (
-	"github.com/darrenvechain/thorgo/crypto/transaction"
+	"github.com/darrenvechain/thorgo/crypto/tx"
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/common/hexutil"
 )
@@ -31,29 +31,29 @@ func (b *Block) ChainTag() byte {
 	return b.ID[len(b.ID)-1]
 }
 
-func (b *Block) BlockRef() transaction.BlockRef {
-	return transaction.NewBlockRefFromID(b.ID)
+func (b *Block) BlockRef() tx.BlockRef {
+	return tx.NewBlockRefFromID(b.ID)
 }
 
 type BlockTransaction struct {
-	ID           common.Hash          `json:"id"`
-	ChainTag     byte                 `json:"chainTag"`
-	BlockRef     transaction.BlockRef `json:"blockRef"`
-	Expiration   int64                `json:"expiration"`
-	Clauses      []transaction.Clause `json:"clauses"`
-	GasPriceCoef int64                `json:"gasPriceCoef"`
-	Gas          int64                `json:"gas"`
-	Origin       common.Address       `json:"origin"`
-	Delegator    *common.Address      `json:"delegator,omitempty"`
-	Nonce        hexutil.Big          `json:"nonce"`
-	DependsOn    *common.Hash         `json:"dependsOn,omitempty"`
-	Size         int64                `json:"size"`
-	GasUsed      int64                `json:"gasUsed"`
-	GasPayer     common.Address       `json:"gasPayer"`
-	Paid         hexutil.Big          `json:"paid"`
-	Reward       hexutil.Big          `json:"reward"`
-	Reverted     bool                 `json:"reverted"`
-	Outputs      []Output             `json:"outputs"`
+	ID           common.Hash     `json:"id"`
+	ChainTag     byte            `json:"chainTag"`
+	BlockRef     tx.BlockRef     `json:"blockRef"`
+	Expiration   int64           `json:"expiration"`
+	Clauses      []tx.Clause     `json:"clauses"`
+	GasPriceCoef int64           `json:"gasPriceCoef"`
+	Gas          int64           `json:"gas"`
+	Origin       common.Address  `json:"origin"`
+	Delegator    *common.Address `json:"delegator,omitempty"`
+	Nonce        hexutil.Big     `json:"nonce"`
+	DependsOn    *common.Hash    `json:"dependsOn,omitempty"`
+	Size         int64           `json:"size"`
+	GasUsed      int64           `json:"gasUsed"`
+	GasPayer     common.Address  `json:"gasPayer"`
+	Paid         hexutil.Big     `json:"paid"`
+	Reward       hexutil.Big     `json:"reward"`
+	Reverted     bool            `json:"reverted"`
+	Outputs      []Output        `json:"outputs"`
 }
 
 type ExpandedBlock struct {

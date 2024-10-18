@@ -7,7 +7,7 @@ import (
 	"math/big"
 
 	"github.com/darrenvechain/thorgo/client"
-	"github.com/darrenvechain/thorgo/crypto/transaction"
+	"github.com/darrenvechain/thorgo/crypto/tx"
 	"github.com/darrenvechain/thorgo/transactions"
 	"github.com/ethereum/go-ethereum/accounts/abi"
 	"github.com/ethereum/go-ethereum/common"
@@ -47,9 +47,9 @@ func (c *Contract) Call(method string, value interface{}, args ...interface{}) e
 	if err != nil {
 		return fmt.Errorf("failed to pack method %s: %w", method, err)
 	}
-	clause := transaction.NewClause(&c.Address).WithData(packed).WithValue(big.NewInt(0))
+	clause := tx.NewClause(&c.Address).WithData(packed).WithValue(big.NewInt(0))
 	request := client.InspectRequest{
-		Clauses: []*transaction.Clause{clause},
+		Clauses: []*tx.Clause{clause},
 	}
 	var response []client.InspectResponse
 	if c.revision == nil {
@@ -103,16 +103,16 @@ func (c *Contract) DecodeCall(data []byte, value interface{}) error {
 }
 
 // AsClause returns a transaction clause for the given method and arguments.
-func (c *Contract) AsClause(method string, args ...interface{}) (*transaction.Clause, error) {
+func (c *Contract) AsClause(method string, args ...interface{}) (*tx.Clause, error) {
 	packed, err := c.ABI.Pack(method, args...)
 	if err != nil {
 		return nil, fmt.Errorf("failed to pack method %s: %w", method, err)
 	}
-	return transaction.NewClause(&c.Address).WithData(packed).WithValue(big.NewInt(0)), nil
+	return tx.NewClause(&c.Address).WithData(packed).WithValue(big.NewInt(0)), nil
 }
 
 type TxManager interface {
-	SendClauses(clauses []*transaction.Clause) (common.Hash, error)
+	SendClauses(clauses []*tx.Clause) (common.Hash, error)
 }
 
 // Send executes a transaction with a single clause.
@@ -121,7 +121,7 @@ func (c *Contract) Send(manager TxManager, method string, args ...interface{}) (
 	if err != nil {
 		return &transactions.Visitor{}, fmt.Errorf("failed to pack method %s: %w", method, err)
 	}
-	txId, err := manager.SendClauses([]*transaction.Clause{clause})
+	txId, err := manager.SendClauses([]*tx.Clause{clause})
 	if err != nil {
 		return &transactions.Visitor{}, fmt.Errorf("failed to send transaction: %w", err)
 	}

@@ -11,7 +11,7 @@ import (
 	"github.com/darrenvechain/thorgo"
 	"github.com/darrenvechain/thorgo/accounts"
 	"github.com/darrenvechain/thorgo/builtins"
-	"github.com/darrenvechain/thorgo/crypto/transaction"
+	"github.com/darrenvechain/thorgo/crypto/tx"
 	"github.com/darrenvechain/thorgo/solo"
 	"github.com/darrenvechain/thorgo/transactions"
 	"github.com/darrenvechain/thorgo/txmanager"
@@ -35,8 +35,8 @@ func TestPKDelegator(t *testing.T) {
 	origin := txmanager.FromPK(solo.Keys()[0], thor)
 	delegator := txmanager.NewDelegator(solo.Keys()[1])
 
-	clause := transaction.NewClause(&common.Address{}).WithValue(new(big.Int))
-	tx, err := thor.Transactor([]*transaction.Clause{clause}).
+	clause := tx.NewClause(&common.Address{}).WithValue(new(big.Int))
+	tx, err := thor.Transactor([]*tx.Clause{clause}).
 		GasPayer(delegator.Address()).
 		Delegate().
 		Build(origin.Address())
@@ -67,7 +67,7 @@ func createDelegationServer(key *ecdsa.PrivateKey) *httptest.Server {
 			return
 		}
 
-		tx, err := transaction.Decode(common.Hex2Bytes(req.Raw))
+		tx, err := tx.Decode(common.Hex2Bytes(req.Raw))
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusBadRequest)
 			return
@@ -95,8 +95,8 @@ func TestNewUrlDelegator(t *testing.T) {
 
 	delegator := txmanager.NewUrlDelegator(server.URL)
 
-	clause := transaction.NewClause(&common.Address{}).WithValue(new(big.Int))
-	tx, err := thor.Transactor([]*transaction.Clause{clause}).
+	clause := tx.NewClause(&common.Address{}).WithValue(new(big.Int))
+	tx, err := thor.Transactor([]*tx.Clause{clause}).
 		Delegate().
 		Build(origin.Address())
 	assert.NoError(t, err)

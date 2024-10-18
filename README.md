@@ -51,10 +51,10 @@ type Signer interface {
 }
 ```
 
-### transaction
+### tx
 
-- `github.com/darrenvechain/thorgo/crypto/transaction`
-- The `transaction` package is a copy of the [vechain/thor/tx](https://github.com/vechain/thor/tree/master/tx) package and can be used to build transactions where `thorgo` does not provide the necessary functionality.
+- `github.com/darrenvechain/thorgo/crypto/tx`
+- The `tx` package is a copy of the [vechain/thor/tx](https://github.com/vechain/thor/tree/master/tx) package and can be used to build transactions where `thorgo` does not provide the necessary functionality.
 
 ### solo
 
@@ -190,7 +190,7 @@ import (
 	"math/big"
 	"strings"
 
-	"github.com/darrenvechain/thorgo/crypto/transaction"
+	"github.com/darrenvechain/thorgo/crypto/tx"
 	"github.com/darrenvechain/thorgo/solo"
 	"github.com/darrenvechain/thorgo"
 	"github.com/darrenvechain/thorgo/txmanager"

@@ -1,7 +1,7 @@
 package client
 
 import (
-	"github.com/darrenvechain/thorgo/crypto/transaction"
+	"github.com/darrenvechain/thorgo/crypto/tx"
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/common/hexutil"
 )
@@ -21,14 +21,14 @@ type AccountStorage struct {
 }
 
 type InspectRequest struct {
-	Gas        *uint64               `json:"gas,omitempty"`
-	GasPrice   *uint64               `json:"gasPrice,omitempty"`
-	Caller     *common.Address       `json:"caller,omitempty"`
-	ProvedWork *string               `json:"provedWork,omitempty"`
-	GasPayer   *common.Address       `json:"gasPayer,omitempty"`
-	Expiration *uint64               `json:"expiration,omitempty"`
-	BlockRef   *string               `json:"blockRef,omitempty"`
-	Clauses    []*transaction.Clause `json:"clauses"`
+	Gas        *uint64         `json:"gas,omitempty"`
+	GasPrice   *uint64         `json:"gasPrice,omitempty"`
+	Caller     *common.Address `json:"caller,omitempty"`
+	ProvedWork *string         `json:"provedWork,omitempty"`
+	GasPayer   *common.Address `json:"gasPayer,omitempty"`
+	Expiration *uint64         `json:"expiration,omitempty"`
+	BlockRef   *string         `json:"blockRef,omitempty"`
+	Clauses    []*tx.Clause    `json:"clauses"`
 }
 
 type InspectResponse struct {

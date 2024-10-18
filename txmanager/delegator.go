@@ -9,7 +9,7 @@ import (
 	"net/http"
 
 	"github.com/darrenvechain/thorgo"
-	"github.com/darrenvechain/thorgo/crypto/transaction"
+	"github.com/darrenvechain/thorgo/crypto/tx"
 	"github.com/darrenvechain/thorgo/transactions"
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/crypto"
@@ -30,7 +30,7 @@ func NewDelegatedManager(thor *thorgo.Thor, origin transactions.Signer, gasPayer
 	}
 }
 
-func (d *DelegatedManager) SignTransaction(tx *transaction.Transaction) ([]byte, error) {
+func (d *DelegatedManager) SignTransaction(tx *tx.Transaction) ([]byte, error) {
 	signature, err := d.origin.SignTransaction(tx)
 	if err != nil {
 		return nil, err
@@ -43,7 +43,7 @@ func (d *DelegatedManager) SignTransaction(tx *transaction.Transaction) ([]byte,
 	return signature, nil
 }
 
-func (d *DelegatedManager) SendClauses(clauses []*transaction.Clause) (common.Hash, error) {
+func (d *DelegatedManager) SendClauses(clauses []*tx.Clause) (common.Hash, error) {
 	tx, err := d.thor.Transactor(clauses).Delegate().Build(d.Address())
 	if err != nil {
 		return common.Hash{}, err
@@ -82,7 +82,7 @@ func (p *PKDelegator) Address() (addr common.Address) {
 	return crypto.PubkeyToAddress(p.key.PublicKey)
 }
 
-func (p *PKDelegator) Delegate(tx *transaction.Transaction, origin common.Address) ([]byte, error) {
+func (p *PKDelegator) Delegate(tx *tx.Transaction, origin common.Address) ([]byte, error) {
 	return crypto.Sign(tx.DelegatorSigningHash(origin).Bytes(), p.key)
 }
 
@@ -95,7 +95,7 @@ func NewUrlDelegator(url string) *URLDelegator {
 	return &URLDelegator{url: url}
 }
 
-func (p *URLDelegator) Delegate(tx *transaction.Transaction, origin common.Address) ([]byte, error) {
+func (p *URLDelegator) Delegate(tx *tx.Transaction, origin common.Address) ([]byte, error) {
 	encoded, err := tx.Encoded()
 	if err != nil {
 		return nil, err
