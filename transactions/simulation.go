@@ -1,9 +1,10 @@
 package transactions
 
 import (
-	"github.com/darrenvechain/thor-go-sdk/client"
+	"github.com/darrenvechain/thorgo/client"
 )
 
+// Simulation represents the result of a transaction simulation.
 type Simulation struct {
 	consumedGas  uint64
 	reverted     bool

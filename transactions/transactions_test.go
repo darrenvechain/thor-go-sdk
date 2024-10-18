@@ -4,12 +4,12 @@ import (
 	"math/big"
 	"testing"
 
-	"github.com/darrenvechain/thor-go-sdk/client"
-	"github.com/darrenvechain/thor-go-sdk/crypto/transaction"
-	"github.com/darrenvechain/thor-go-sdk/solo"
-	"github.com/darrenvechain/thor-go-sdk/thorgo"
-	"github.com/darrenvechain/thor-go-sdk/thorgo/transactions"
-	"github.com/darrenvechain/thor-go-sdk/txmanager"
+	"github.com/darrenvechain/thorgo"
+	"github.com/darrenvechain/thorgo/client"
+	"github.com/darrenvechain/thorgo/crypto/transaction"
+	"github.com/darrenvechain/thorgo/solo"
+	"github.com/darrenvechain/thorgo/transactions"
+	"github.com/darrenvechain/thorgo/txmanager"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -25,7 +25,7 @@ func TestTransactions(t *testing.T) {
 	// build a transaction
 	to := account2.Address()
 	vetClause := transaction.NewClause(&to).WithValue(big.NewInt(1000))
-	unsigned, err := transactions.NewTransactor(thorClient, []*transaction.Clause{vetClause}, account1.Address()).Build()
+	unsigned, err := transactions.NewTransactor(thorClient, []*transaction.Clause{vetClause}).Build(account1.Address())
 	assert.NoError(t, err)
 
 	// sign it

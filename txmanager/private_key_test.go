@@ -1,11 +1,14 @@
-package txmanager
+package txmanager_test
 
 import (
 	"math/big"
 	"testing"
 
-	"github.com/darrenvechain/thor-go-sdk/crypto/transaction"
-	"github.com/darrenvechain/thor-go-sdk/thorgo"
+	"github.com/darrenvechain/thorgo"
+	"github.com/darrenvechain/thorgo/accounts"
+	"github.com/darrenvechain/thorgo/crypto/transaction"
+	"github.com/darrenvechain/thorgo/transactions"
+	"github.com/darrenvechain/thorgo/txmanager"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -14,18 +17,18 @@ var (
 )
 
 var (
-	// PKManager should implement Manager
-	_ Manager = &PKManager{}
-	// PKManager should implement Signer
-	_ Signer = &PKManager{}
+	// PKManager should implement accounts.TxManager
+	_ accounts.TxManager = &txmanager.PKManager{}
+	// PKManager should implement transactions.Signer
+	_ transactions.Signer = &txmanager.PKManager{}
 )
 
 // TestPKSigner demonstrates ease the ease of sending a transaction using a private key signer
 func TestPKSigner(t *testing.T) {
-	signer, err := GeneratePK(thor)
+	signer, err := txmanager.GeneratePK(thor)
 	assert.NoError(t, err)
 
-	to, err := GeneratePK(thor)
+	to, err := txmanager.GeneratePK(thor)
 	assert.NoError(t, err)
 	toAddr := to.Address()
 	vetClause := transaction.NewClause(&toAddr).WithValue(big.NewInt(1000))

@@ -3,8 +3,8 @@ package accounts
 import (
 	"math/big"
 
-	"github.com/darrenvechain/thor-go-sdk/client"
-	"github.com/darrenvechain/thor-go-sdk/crypto/transaction"
+	"github.com/darrenvechain/thorgo/client"
+	"github.com/darrenvechain/thorgo/crypto/transaction"
 	"github.com/ethereum/go-ethereum/accounts/abi"
 	"github.com/ethereum/go-ethereum/common"
 )
@@ -19,7 +19,7 @@ func New(c *client.Client, account common.Address) *Visitor {
 	return &Visitor{client: c, account: account}
 }
 
-// Revision sets the revision for the API call. Optional.
+// Revision sets the optional revision for the API calls.
 func (a *Visitor) Revision(revision common.Hash) *Visitor {
 	a.revision = &revision
 	return a
@@ -55,17 +55,18 @@ func (a *Visitor) Storage(key common.Hash) (*client.AccountStorage, error) {
 func (a *Visitor) Call(calldata []byte) (*client.InspectResponse, error) {
 	clause := transaction.NewClause(&a.account).WithData(calldata).WithValue(big.NewInt(0))
 
-	var inspection []client.InspectResponse
-	var err error
+	request := client.InspectRequest{
+		Clauses: []*transaction.Clause{clause},
+	}
+	var (
+		inspection []client.InspectResponse
+		err        error
+	)
 
 	if a.revision == nil {
-		inspection, err = a.client.Inspect(client.InspectRequest{
-			Clauses: []*transaction.Clause{clause},
-		})
+		inspection, err = a.client.Inspect(request)
 	} else {
-		inspection, err = a.client.InspectAt(client.InspectRequest{
-			Clauses: []*transaction.Clause{clause},
-		}, *a.revision)
+		inspection, err = a.client.InspectAt(request, *a.revision)
 	}
 
 	if err != nil {
@@ -77,5 +78,5 @@ func (a *Visitor) Call(calldata []byte) (*client.InspectResponse, error) {
 
 // Contract returns a new Contract instance.
 func (a *Visitor) Contract(abi *abi.ABI) *Contract {
-	return NewContract(a.client, a.account, abi, a.revision)
+	return NewContractAt(a.client, a.account, abi, a.revision)
 }

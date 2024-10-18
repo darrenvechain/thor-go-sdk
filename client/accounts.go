@@ -1,7 +1,7 @@
 package client
 
 import (
-	"github.com/darrenvechain/thor-go-sdk/crypto/transaction"
+	"github.com/darrenvechain/thorgo/crypto/transaction"
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/common/hexutil"
 )

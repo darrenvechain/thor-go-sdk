@@ -7,7 +7,7 @@ import (
 	"net/http"
 	"strings"
 
-	"github.com/darrenvechain/thor-go-sdk/crypto/transaction"
+	"github.com/darrenvechain/thorgo/crypto/transaction"
 	"github.com/ethereum/go-ethereum/common"
 )
 
@@ -194,6 +194,7 @@ func (c *Client) TransactionReceiptAt(id common.Hash, head common.Hash) (*Transa
 	return httpGet(c, url, &TransactionReceipt{})
 }
 
+// FilterEvents fetches the event logs that match the given filter.
 func (c *Client) FilterEvents(filter *EventFilter) ([]EventLog, error) {
 	path := "/logs/event"
 	events := make([]EventLog, 0)
@@ -204,6 +205,7 @@ func (c *Client) FilterEvents(filter *EventFilter) ([]EventLog, error) {
 	return events, nil
 }
 
+// FilterTransfers fetches the transfer logs that match the given filter.
 func (c *Client) FilterTransfers(filter *TransferFilter) ([]TransferLog, error) {
 	path := "/logs/transfer"
 	transfers := make([]TransferLog, 0)
@@ -214,6 +216,7 @@ func (c *Client) FilterTransfers(filter *TransferFilter) ([]TransferLog, error) 
 	return transfers, nil
 }
 
+// Peers fetches the list of peers connected to the node.
 func (c *Client) Peers() ([]Peer, error) {
 	path := "/node/network/peers"
 	peers := make([]Peer, 0)

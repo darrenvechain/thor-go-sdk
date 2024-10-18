@@ -1,4 +1,4 @@
-module github.com/darrenvechain/thor-go-sdk
+module github.com/darrenvechain/thorgo
 
 go 1.22.4
 

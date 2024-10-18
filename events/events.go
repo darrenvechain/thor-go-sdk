@@ -1,7 +1,7 @@
 package events
 
 import (
-	"github.com/darrenvechain/thor-go-sdk/client"
+	"github.com/darrenvechain/thorgo/client"
 )
 
 var (
@@ -22,16 +22,19 @@ func New(c *client.Client, criteria []client.EventCriteria) *Filter {
 	}}
 }
 
-func (f *Filter) Descending() *Filter {
+// Desc sets the order of the events to descending. Default is ascending.
+func (f *Filter) Desc() *Filter {
 	f.request.Order = &descending
 	return f
 }
 
-func (f *Filter) Ascending() *Filter {
+// Asc sets the order of the events to ascending. This is the default.
+func (f *Filter) Asc() *Filter {
 	f.request.Order = &ascending
 	return f
 }
 
+// BlockRange sets the range of blocks to filter events.
 func (f *Filter) BlockRange(from int64, to int64) *Filter {
 	f.request.Range = &client.FilterRange{
 		From: &from,
@@ -41,6 +44,7 @@ func (f *Filter) BlockRange(from int64, to int64) *Filter {
 	return f
 }
 
+// TimeRange sets the range of time to filter events.
 func (f *Filter) TimeRange(from int64, to int64) *Filter {
 	f.request.Range = &client.FilterRange{
 		From: &from,
@@ -50,6 +54,7 @@ func (f *Filter) TimeRange(from int64, to int64) *Filter {
 	return f
 }
 
+// Apply executes the filter and returns the events.
 func (f *Filter) Apply(offset int64, limit int64) ([]client.EventLog, error) {
 	f.request.Options = &client.FilterOptions{
 		Offset: &offset,

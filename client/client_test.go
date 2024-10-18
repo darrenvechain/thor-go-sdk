@@ -1,7 +1,7 @@
 package client
 
 import (
-	"github.com/darrenvechain/thor-go-sdk/solo"
+	"github.com/darrenvechain/thorgo/solo"
 )
 
 var client *Client

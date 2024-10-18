@@ -6,9 +6,9 @@ import (
 	"fmt"
 	"math/big"
 
-	"github.com/darrenvechain/thor-go-sdk/client"
-	"github.com/darrenvechain/thor-go-sdk/crypto/transaction"
-	"github.com/darrenvechain/thor-go-sdk/thorgo/transactions"
+	"github.com/darrenvechain/thorgo/client"
+	"github.com/darrenvechain/thorgo/crypto/transaction"
+	"github.com/darrenvechain/thorgo/transactions"
 	"github.com/ethereum/go-ethereum/accounts/abi"
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/common/hexutil"
@@ -22,7 +22,17 @@ type Contract struct {
 	Address  common.Address
 }
 
+// NewContract creates a new contract instance.
 func NewContract(
+	client *client.Client,
+	address common.Address,
+	abi *abi.ABI,
+) *Contract {
+	return &Contract{client: client, Address: address, ABI: abi, revision: nil}
+}
+
+// NewContractAt creates a new contract instance at a specific revision. It should be used to query historical contract states.
+func NewContractAt(
 	client *client.Client,
 	address common.Address,
 	abi *abi.ABI,
@@ -68,7 +78,7 @@ func (c *Contract) Call(method string, value interface{}, args ...interface{}) e
 	return nil
 }
 
-// DecodeCall decodes the result of a contract call.
+// DecodeCall decodes the result of a contract call, for example, decoding a clause's 'data'.
 // The data must include the method signature.
 func (c *Contract) DecodeCall(data []byte, value interface{}) error {
 	var method string
@@ -105,7 +115,7 @@ type TxManager interface {
 	SendClauses(clauses []*transaction.Clause) (common.Hash, error)
 }
 
-// Send executes a single clause
+// Send executes a transaction with a single clause.
 func (c *Contract) Send(manager TxManager, method string, args ...interface{}) (*transactions.Visitor, error) {
 	clause, err := c.AsClause(method, args...)
 	if err != nil {
@@ -118,9 +128,20 @@ func (c *Contract) Send(manager TxManager, method string, args ...interface{}) (
 	return transactions.New(c.client, txId), nil
 }
 
-// EventCriteria returns criteria that can be used to query contract events.
-// The matchers must be provided in the same order as the event inputs.
-// Pass nil for values that should be ignored.
+// EventCriteria generates criteria to query contract events by name.
+// Matchers correspond to event input parameters and must be in the same order as the event's inputs.
+// Use nil for any event input you want to ignore.
+//
+// For example, consider the following event:
+//
+//	event Transfer(address indexed from, address indexed to, uint256 value);
+//
+// To filter events based on the 'to' address while ignoring the 'from' address and 'value', you can pass nil for those values:
+//
+//	to := common.HexToAddress("0x87AA2B76f29583E4A9095DBb6029A9C41994E25B")
+//	criteria, err := contract.EventCriteria("Transfer", nil, &to)
+//
+// Returns an EventCriteria object and any error encountered.
 func (c *Contract) EventCriteria(name string, matchers ...interface{}) (client.EventCriteria, error) {
 	ev, ok := c.ABI.Events[name]
 	if !ok {
@@ -169,6 +190,26 @@ type Event struct {
 	Log  client.EventLog
 }
 
+// DecodeEvents parses logs into a slice of decoded events.
+// The logs are typically obtained from a contract's filtered events.
+//
+// For example, consider the Solidity event:
+//
+//	event Transfer(address indexed from, address indexed to, uint256 value);
+//
+// To retrieve and decode "Transfer" events where the 'to' address matches a given value, you would:
+//
+//	to := common.HexToAddress("0x87AA2B76f29583E4A9095DBb6029A9C41994E25B")
+//	logs, _ := client.FilterEvents(contract.EventCriteria("Transfer", nil, &to))
+//	events, _ := contract.DecodeEvents(logs)
+//
+// Once decoded, you can iterate over the events and access their name and arguments:
+//
+//	for _, event := range events {
+//	  fmt.Println(event.Name, event.Args)
+//	}
+//
+// This function returns a slice of decoded event objects and any error encountered.
 func (c *Contract) DecodeEvents(logs []client.EventLog) ([]Event, error) {
 	var decoded []Event
 	for _, log := range logs {

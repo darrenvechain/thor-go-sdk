@@ -4,7 +4,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/darrenvechain/thor-go-sdk/solo"
+	"github.com/darrenvechain/thorgo/solo"
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/stretchr/testify/assert"
 )

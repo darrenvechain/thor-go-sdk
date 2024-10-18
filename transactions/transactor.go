@@ -4,25 +4,24 @@ import (
 	"fmt"
 	"math"
 
-	"github.com/darrenvechain/thor-go-sdk/client"
-	"github.com/darrenvechain/thor-go-sdk/crypto/transaction"
+	"github.com/darrenvechain/thorgo/client"
+	"github.com/darrenvechain/thorgo/crypto/transaction"
 	"github.com/ethereum/go-ethereum/common"
 )
 
+// Transactor is a transaction builder that can be used to simulate, build and send transactions.
 type Transactor struct {
 	client   *client.Client
 	clauses  []*transaction.Clause
 	builder  *transaction.Builder
-	caller   common.Address
 	gasPayer *common.Address
 }
 
-func NewTransactor(client *client.Client, clauses []*transaction.Clause, caller common.Address) *Transactor {
+func NewTransactor(client *client.Client, clauses []*transaction.Clause) *Transactor {
 	builder := new(transaction.Builder)
 	return &Transactor{
 		client:  client,
 		clauses: clauses,
-		caller:  caller,
 		builder: builder,
 	}
 }
@@ -76,10 +75,10 @@ func (t *Transactor) Delegate() *Transactor {
 }
 
 // Simulate estimates the gas usage and checks for errors or reversion in the transaction.
-func (t *Transactor) Simulate() (Simulation, error) {
+func (t *Transactor) Simulate(caller common.Address) (Simulation, error) {
 	request := client.InspectRequest{
 		Clauses: t.clauses,
-		Caller:  &t.caller,
+		Caller:  &caller,
 	}
 
 	if t.gasPayer != nil {
@@ -117,65 +116,63 @@ func (t *Transactor) Simulate() (Simulation, error) {
 }
 
 // Build constructs the transaction, applying defaults where necessary.
-func (t *Transactor) Build() (*transaction.Transaction, error) {
-	unsanitized := t.builder.Build()
+func (t *Transactor) Build(caller common.Address) (*transaction.Transaction, error) {
+	initial := t.builder.Build()
 	chainTag := t.client.ChainTag()
 
 	builder := new(transaction.Builder).
-		GasPriceCoef(unsanitized.GasPriceCoef()).
+		GasPriceCoef(initial.GasPriceCoef()).
 		ChainTag(chainTag).
-		Features(unsanitized.Features()).
-		DependsOn(unsanitized.DependsOn())
+		Features(initial.Features()).
+		DependsOn(initial.DependsOn()).
+		Gas(initial.Gas()).
+		BlockRef(initial.BlockRef()).
+		Expiration(initial.Expiration()).
+		Nonce(initial.Nonce())
 
 	for _, clause := range t.clauses {
 		builder.Clause(clause)
 	}
 
-	// Set gas
-	if unsanitized.Gas() == 0 {
-		simulation, err := t.Simulate()
+	// Check if gas is set
+	if initial.Gas() == 0 {
+		simulation, err := t.Simulate(caller)
 		if err != nil {
 			return nil, err
 		}
 		builder.Gas(simulation.TotalGas())
-	} else {
-		builder.Gas(unsanitized.Gas())
 	}
 
-	// Set block reference
-	if unsanitized.BlockRef().Number() == 0 {
+	// Check if block reference is set
+	if initial.BlockRef().Number() == 0 {
 		best, err := t.client.BestBlock()
 		if err != nil {
 			return nil, err
 		}
 		builder.BlockRef(best.BlockRef())
-	} else {
-		builder.BlockRef(unsanitized.BlockRef())
 	}
 
 	// Set expiration
-	if unsanitized.Expiration() == 0 {
+	if initial.Expiration() == 0 {
 		builder.Expiration(30)
-	} else {
-		builder.Expiration(unsanitized.Expiration())
 	}
 
 	// Set nonce
-	if unsanitized.Nonce() == 0 {
+	if initial.Nonce() == 0 {
 		builder.Nonce(transaction.Nonce())
-	} else {
-		builder.Nonce(unsanitized.Nonce())
 	}
 
 	return builder.Build(), nil
 }
 
-type TxSigner interface {
+type Signer interface {
 	SignTransaction(tx *transaction.Transaction) ([]byte, error)
+	Address() common.Address
 }
 
-func (t *Transactor) Send(signer TxSigner) (*Visitor, error) {
-	tx, err := t.Build()
+// Send will submit the transaction to the network.
+func (t *Transactor) Send(signer Signer) (*Visitor, error) {
+	tx, err := t.Build(signer.Address())
 	if err != nil {
 		return nil, fmt.Errorf("failed to build transaction: %w", err)
 	}

@@ -1,4 +1,4 @@
-package txmanager
+package txmanager_test
 
 import (
 	"crypto/ecdsa"
@@ -8,30 +8,39 @@ import (
 	"net/http/httptest"
 	"testing"
 
-	"github.com/darrenvechain/thor-go-sdk/builtins"
-	"github.com/darrenvechain/thor-go-sdk/crypto/transaction"
-	"github.com/darrenvechain/thor-go-sdk/solo"
-	"github.com/darrenvechain/thor-go-sdk/thorgo"
+	"github.com/darrenvechain/thorgo"
+	"github.com/darrenvechain/thorgo/accounts"
+	"github.com/darrenvechain/thorgo/builtins"
+	"github.com/darrenvechain/thorgo/crypto/transaction"
+	"github.com/darrenvechain/thorgo/solo"
+	"github.com/darrenvechain/thorgo/transactions"
+	"github.com/darrenvechain/thorgo/txmanager"
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/crypto"
 	"github.com/stretchr/testify/assert"
 )
 
 var (
-	// DelegatedManager should implement Manager
-	_ Manager = &DelegatedManager{}
 	// PKDelegator should implement Delegator
-	_ Delegator = &PKDelegator{}
+	_ txmanager.Delegator = &txmanager.PKDelegator{}
 	// URLDelegator should implement Delegator
-	_ Delegator = &URLDelegator{}
+	_ txmanager.Delegator = &txmanager.URLDelegator{}
+	// DelegatedManager should implement transactions.Signer
+	_ transactions.Signer = &txmanager.DelegatedManager{}
+	// DelegatedManager should implement accounts.TxManager
+	_ accounts.TxManager = &txmanager.DelegatedManager{}
 )
 
 func TestPKDelegator(t *testing.T) {
-	origin := FromPK(solo.Keys()[0], thor)
-	delegator := NewDelegator(solo.Keys()[1])
+	origin := txmanager.FromPK(solo.Keys()[0], thor)
+	delegator := txmanager.NewDelegator(solo.Keys()[1])
 
 	clause := transaction.NewClause(&common.Address{}).WithValue(new(big.Int))
-	tx, err := thor.Transactor([]*transaction.Clause{clause}, origin.Address()).Delegate().Build()
+	tx, err := thor.Transactor([]*transaction.Clause{clause}).
+		GasPayer(delegator.Address()).
+		Delegate().
+		Build(origin.Address())
+
 	assert.NoError(t, err)
 
 	delegatorSignature, err := delegator.Delegate(tx, origin.Address())
@@ -52,7 +61,7 @@ func TestPKDelegator(t *testing.T) {
 
 func createDelegationServer(key *ecdsa.PrivateKey) *httptest.Server {
 	return httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		var req DelegateRequest
+		var req txmanager.DelegateRequest
 		if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
 			http.Error(w, err.Error(), http.StatusBadRequest)
 			return
@@ -72,7 +81,7 @@ func createDelegationServer(key *ecdsa.PrivateKey) *httptest.Server {
 			return
 		}
 
-		resp := DelegateResponse{Signature: common.Bytes2Hex(signature)}
+		resp := txmanager.DelegateResponse{Signature: common.Bytes2Hex(signature)}
 		if err := json.NewEncoder(w).Encode(resp); err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
@@ -81,13 +90,15 @@ func createDelegationServer(key *ecdsa.PrivateKey) *httptest.Server {
 }
 
 func TestNewUrlDelegator(t *testing.T) {
-	origin := FromPK(solo.Keys()[0], thor)
+	origin := txmanager.FromPK(solo.Keys()[0], thor)
 	server := createDelegationServer(solo.Keys()[1])
 
-	delegator := NewUrlDelegator(server.URL)
+	delegator := txmanager.NewUrlDelegator(server.URL)
 
 	clause := transaction.NewClause(&common.Address{}).WithValue(new(big.Int))
-	tx, err := thor.Transactor([]*transaction.Clause{clause}, origin.Address()).Delegate().Build()
+	tx, err := thor.Transactor([]*transaction.Clause{clause}).
+		Delegate().
+		Build(origin.Address())
 	assert.NoError(t, err)
 
 	delegatorSignature, err := delegator.Delegate(tx, origin.Address())
@@ -114,9 +125,9 @@ func TestNewDelegatedManager(t *testing.T) {
 	thor, err := thorgo.FromURL("http://localhost:8669")
 	assert.NoError(t, err)
 
-	origin := FromPK(solo.Keys()[0], thor)
-	gasPayer := NewDelegator(solo.Keys()[1])
-	manager := NewDelegatedManager(thor, origin, gasPayer)
+	origin := txmanager.FromPK(solo.Keys()[0], thor)
+	gasPayer := txmanager.NewDelegator(solo.Keys()[1])
+	manager := txmanager.NewDelegatedManager(thor, origin, gasPayer)
 
 	contract := builtins.VTHO.Load(thor)
 

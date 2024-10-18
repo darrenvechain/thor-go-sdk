@@ -3,7 +3,7 @@ package transfers
 import (
 	"errors"
 
-	"github.com/darrenvechain/thor-go-sdk/client"
+	"github.com/darrenvechain/thorgo/client"
 )
 
 var (
@@ -24,12 +24,14 @@ func New(c *client.Client, criteria []client.TransferCriteria) *Filter {
 	}}
 }
 
-func (f *Filter) Descending() *Filter {
+// Desc sets the order of the transfers to descending. Default is ascending.
+func (f *Filter) Desc() *Filter {
 	f.request.Order = &descending
 	return f
 }
 
-func (f *Filter) Ascending() *Filter {
+// Asc sets the order of the transfers to ascending. This is the default.
+func (f *Filter) Asc() *Filter {
 	f.request.Order = &ascending
 	return f
 }

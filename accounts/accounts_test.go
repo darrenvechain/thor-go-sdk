@@ -3,12 +3,12 @@ package accounts_test
 import (
 	"testing"
 
-	"github.com/darrenvechain/thor-go-sdk/builtins"
-	"github.com/darrenvechain/thor-go-sdk/client"
-	"github.com/darrenvechain/thor-go-sdk/solo"
-	"github.com/darrenvechain/thor-go-sdk/thorgo"
-	"github.com/darrenvechain/thor-go-sdk/thorgo/accounts"
-	"github.com/darrenvechain/thor-go-sdk/txmanager"
+	"github.com/darrenvechain/thorgo"
+	"github.com/darrenvechain/thorgo/accounts"
+	"github.com/darrenvechain/thorgo/builtins"
+	"github.com/darrenvechain/thorgo/client"
+	"github.com/darrenvechain/thorgo/solo"
+	"github.com/darrenvechain/thorgo/txmanager"
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/stretchr/testify/assert"
 )

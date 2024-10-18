@@ -8,8 +8,9 @@ import (
 	"fmt"
 	"net/http"
 
-	"github.com/darrenvechain/thor-go-sdk/crypto/transaction"
-	"github.com/darrenvechain/thor-go-sdk/thorgo"
+	"github.com/darrenvechain/thorgo"
+	"github.com/darrenvechain/thorgo/crypto/transaction"
+	"github.com/darrenvechain/thorgo/transactions"
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/crypto"
 )
@@ -18,10 +19,10 @@ import (
 type DelegatedManager struct {
 	thor     *thorgo.Thor
 	gasPayer Delegator
-	origin   Signer
+	origin   transactions.Signer
 }
 
-func NewDelegatedManager(thor *thorgo.Thor, origin Signer, gasPayer Delegator) *DelegatedManager {
+func NewDelegatedManager(thor *thorgo.Thor, origin transactions.Signer, gasPayer Delegator) *DelegatedManager {
 	return &DelegatedManager{
 		thor:     thor,
 		origin:   origin,
@@ -29,21 +30,28 @@ func NewDelegatedManager(thor *thorgo.Thor, origin Signer, gasPayer Delegator) *
 	}
 }
 
-func (d *DelegatedManager) SendClauses(clauses []*transaction.Clause) (common.Hash, error) {
-	tx, err := d.thor.Transactor(clauses, d.Address()).Delegate().Build()
+func (d *DelegatedManager) SignTransaction(tx *transaction.Transaction) ([]byte, error) {
+	signature, err := d.origin.SignTransaction(tx)
 	if err != nil {
-		return common.Hash{}, fmt.Errorf("failed to build transaction: %w", err)
+		return nil, err
 	}
 	delegatorSig, err := d.gasPayer.Delegate(tx, d.Address())
 	if err != nil {
-		return common.Hash{}, fmt.Errorf("failed to delegate: %w", err)
+		return nil, err
 	}
-	signature, err := d.origin.SignTransaction(tx)
+	signature = append(signature, delegatorSig...)
+	return signature, nil
+}
+
+func (d *DelegatedManager) SendClauses(clauses []*transaction.Clause) (common.Hash, error) {
+	tx, err := d.thor.Transactor(clauses).Delegate().Build(d.Address())
+	if err != nil {
+		return common.Hash{}, err
+	}
+	signature, err := d.SignTransaction(tx)
 	if err != nil {
 		return common.Hash{}, fmt.Errorf("failed to sign transaction: %w", err)
 	}
-
-	signature = append(signature, delegatorSig...)
 	tx = tx.WithSignature(signature)
 	res, err := d.thor.Client.SendTransaction(tx)
 	if err != nil {

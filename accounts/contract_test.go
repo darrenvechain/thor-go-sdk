@@ -4,9 +4,9 @@ import (
 	"math/big"
 	"testing"
 
-	"github.com/darrenvechain/thor-go-sdk/client"
-	"github.com/darrenvechain/thor-go-sdk/thorgo/events"
-	"github.com/darrenvechain/thor-go-sdk/txmanager"
+	"github.com/darrenvechain/thorgo/client"
+	"github.com/darrenvechain/thorgo/events"
+	"github.com/darrenvechain/thorgo/txmanager"
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/stretchr/testify/assert"
 )

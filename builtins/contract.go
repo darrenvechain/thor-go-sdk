@@ -5,8 +5,8 @@ import (
 	"compress/gzip"
 	"fmt"
 
-	"github.com/darrenvechain/thor-go-sdk/thorgo"
-	"github.com/darrenvechain/thor-go-sdk/thorgo/accounts"
+	"github.com/darrenvechain/thorgo"
+	"github.com/darrenvechain/thorgo/accounts"
 	"github.com/ethereum/go-ethereum/accounts/abi"
 	"github.com/ethereum/go-ethereum/common"
 )

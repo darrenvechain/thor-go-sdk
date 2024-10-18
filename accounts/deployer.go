@@ -5,9 +5,9 @@ import (
 	"fmt"
 	"math/big"
 
-	"github.com/darrenvechain/thor-go-sdk/client"
-	"github.com/darrenvechain/thor-go-sdk/crypto/transaction"
-	"github.com/darrenvechain/thor-go-sdk/thorgo/transactions"
+	"github.com/darrenvechain/thorgo/client"
+	"github.com/darrenvechain/thorgo/crypto/transaction"
+	"github.com/darrenvechain/thorgo/transactions"
 	"github.com/ethereum/go-ethereum/accounts/abi"
 	"github.com/ethereum/go-ethereum/common"
 )
@@ -48,7 +48,7 @@ func (d *Deployer) Deploy(sender TxManager, args ...interface{}) (*Contract, com
 
 	address := common.HexToAddress(receipt.Outputs[0].ContractAddress)
 
-	return NewContract(d.client, address, d.abi, nil), txID, nil
+	return NewContract(d.client, address, d.abi), txID, nil
 }
 
 // AsClause returns the contract deployment clause.

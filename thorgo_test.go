@@ -3,8 +3,8 @@ package thorgo
 import (
 	"testing"
 
-	"github.com/darrenvechain/thor-go-sdk/client"
-	"github.com/darrenvechain/thor-go-sdk/solo"
+	"github.com/darrenvechain/thorgo/client"
+	"github.com/darrenvechain/thorgo/solo"
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/crypto"
 	"github.com/stretchr/testify/assert"
@@ -61,7 +61,7 @@ func TestTransfers(t *testing.T) {
 
 	events, err := thor.Transfers(criteria).
 		BlockRange(0, 10000).
-		Ascending().
+		Asc().
 		Apply(0, 100)
 	assert.NoError(t, err)
 	assert.NotNil(t, events)
@@ -72,7 +72,7 @@ func TestEvents(t *testing.T) {
 
 	events, err := thor.Events(criteria).
 		BlockRange(0, 10000).
-		Ascending().
+		Asc().
 		Apply(0, 100)
 	assert.NoError(t, err)
 	assert.NotNil(t, events)

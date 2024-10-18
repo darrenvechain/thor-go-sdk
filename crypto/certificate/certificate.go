@@ -4,7 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 
-	"github.com/darrenvechain/thor-go-sdk/crypto/hash"
+	"github.com/darrenvechain/thorgo/crypto/hash"
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/crypto"
 )

@@ -3,9 +3,9 @@ package transfers
 import (
 	"testing"
 
-	"github.com/darrenvechain/thor-go-sdk/client"
-	"github.com/darrenvechain/thor-go-sdk/solo"
-	blocks2 "github.com/darrenvechain/thor-go-sdk/thorgo/blocks"
+	blocks2 "github.com/darrenvechain/thorgo/blocks"
+	"github.com/darrenvechain/thorgo/client"
+	"github.com/darrenvechain/thorgo/solo"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -19,7 +19,7 @@ func TestTransfersByBlockRangeASC(t *testing.T) {
 	// Don't apply any criteria, just get all events
 	events, err := New(thorClient, []client.TransferCriteria{}).
 		BlockRange(0, 1).
-		Ascending().
+		Asc().
 		Apply(0, 100)
 	assert.NoError(t, err)
 	assert.NotNil(t, events)
@@ -34,7 +34,7 @@ func TestTransfersByTimeRangeDESC(t *testing.T) {
 
 	events, err := New(thorClient, []client.TransferCriteria{}).
 		TimeRange(genesis.Timestamp, best.Timestamp).
-		Descending().
+		Desc().
 		Apply(0, 100)
 
 	assert.NoError(t, err)

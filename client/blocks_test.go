@@ -3,7 +3,7 @@ package client
 import (
 	"testing"
 
-	"github.com/darrenvechain/thor-go-sdk/solo"
+	"github.com/darrenvechain/thorgo/solo"
 	"github.com/stretchr/testify/assert"
 )
 

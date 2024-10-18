@@ -1,13 +1,13 @@
 package thorgo
 
 import (
-	"github.com/darrenvechain/thor-go-sdk/client"
-	"github.com/darrenvechain/thor-go-sdk/crypto/transaction"
-	"github.com/darrenvechain/thor-go-sdk/thorgo/accounts"
-	"github.com/darrenvechain/thor-go-sdk/thorgo/blocks"
-	"github.com/darrenvechain/thor-go-sdk/thorgo/events"
-	"github.com/darrenvechain/thor-go-sdk/thorgo/transactions"
-	"github.com/darrenvechain/thor-go-sdk/thorgo/transfers"
+	"github.com/darrenvechain/thorgo/accounts"
+	"github.com/darrenvechain/thorgo/blocks"
+	"github.com/darrenvechain/thorgo/client"
+	"github.com/darrenvechain/thorgo/crypto/transaction"
+	"github.com/darrenvechain/thorgo/events"
+	"github.com/darrenvechain/thorgo/transactions"
+	"github.com/darrenvechain/thorgo/transfers"
 	"github.com/ethereum/go-ethereum/accounts/abi"
 	"github.com/ethereum/go-ethereum/common"
 )
@@ -30,27 +30,33 @@ func FromClient(c *client.Client) *Thor {
 	return &Thor{Client: c, Blocks: blocks.New(c)}
 }
 
+// Account can be used to query account information such as balance, code, storage, etc.
+// It also provides a way to interact with contracts.
 func (t *Thor) Account(address common.Address) *accounts.Visitor {
 	return accounts.New(t.Client, address)
 }
 
+// Transaction provides utility functions to fetch or wait for transactions and their receipts.
 func (t *Thor) Transaction(hash common.Hash) *transactions.Visitor {
 	return transactions.New(t.Client, hash)
 }
 
-func (t *Thor) Transactor(clauses []*transaction.Clause, caller common.Address) *transactions.Transactor {
-	return transactions.NewTransactor(t.Client, clauses, caller)
+// Transactor creates a new transaction builder which makes it easier to build, simulate, build and send transactions.
+func (t *Thor) Transactor(clauses []*transaction.Clause) *transactions.Transactor {
+	return transactions.NewTransactor(t.Client, clauses)
 }
 
+// Events sets up a query builder to fetch smart contract solidity events.
 func (t *Thor) Events(criteria []client.EventCriteria) *events.Filter {
 	return events.New(t.Client, criteria)
 }
 
+// Transfers sets up a query builder to fetch VET transfers.
 func (t *Thor) Transfers(criteria []client.TransferCriteria) *transfers.Filter {
 	return transfers.New(t.Client, criteria)
 }
 
-// Deployer creates a new contract deployer.
+// Deployer makes it easier to deploy contracts.
 func (t *Thor) Deployer(bytecode []byte, abi *abi.ABI) *accounts.Deployer {
 	return accounts.NewDeployer(t.Client, bytecode, abi)
 }

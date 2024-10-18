@@ -3,9 +3,9 @@ package events
 import (
 	"testing"
 
-	"github.com/darrenvechain/thor-go-sdk/client"
-	"github.com/darrenvechain/thor-go-sdk/solo"
-	"github.com/darrenvechain/thor-go-sdk/thorgo/blocks"
+	"github.com/darrenvechain/thorgo/blocks"
+	"github.com/darrenvechain/thorgo/client"
+	"github.com/darrenvechain/thorgo/solo"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -18,7 +18,7 @@ func TestEventByBlockRangeASC(t *testing.T) {
 	// Don't apply any criteria, just get all events
 	events, err := New(thorClient, []client.EventCriteria{}).
 		BlockRange(0, 1).
-		Ascending().
+		Asc().
 		Apply(0, 100)
 	assert.NoError(t, err)
 	assert.NotNil(t, events)
@@ -33,7 +33,7 @@ func TestEventsByTimeRangeDESC(t *testing.T) {
 
 	events, err := New(thorClient, []client.EventCriteria{}).
 		TimeRange(genesis.Timestamp, best.Timestamp).
-		Descending().
+		Desc().
 		Apply(0, 100)
 
 	assert.NoError(t, err)

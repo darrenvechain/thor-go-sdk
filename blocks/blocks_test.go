@@ -3,8 +3,8 @@ package blocks
 import (
 	"testing"
 
-	"github.com/darrenvechain/thor-go-sdk/client"
-	"github.com/darrenvechain/thor-go-sdk/solo"
+	"github.com/darrenvechain/thorgo/client"
+	"github.com/darrenvechain/thorgo/solo"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -51,7 +51,7 @@ func TestGetExpandedBlock(t *testing.T) {
 
 // TestWaitForNextBlock waits for the next block to be produced
 func TestWaitForNextBlock(t *testing.T) {
-	block, err := blocks.WaitForNext()
+	block, err := blocks.Ticker()
 	assert.NoError(t, err)
 	assert.NotNil(t, block)
 }

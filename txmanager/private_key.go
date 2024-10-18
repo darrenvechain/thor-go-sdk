@@ -3,8 +3,8 @@ package txmanager
 import (
 	"crypto/ecdsa"
 
-	"github.com/darrenvechain/thor-go-sdk/crypto/transaction"
-	"github.com/darrenvechain/thor-go-sdk/thorgo"
+	"github.com/darrenvechain/thorgo"
+	"github.com/darrenvechain/thorgo/crypto/transaction"
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/crypto"
 )
@@ -36,7 +36,7 @@ func (p *PKManager) PublicKey() *ecdsa.PublicKey {
 }
 
 func (p *PKManager) SendClauses(clauses []*transaction.Clause) (common.Hash, error) {
-	tx, err := p.thor.Transactor(clauses, p.Address()).Build()
+	tx, err := p.thor.Transactor(clauses).Build(p.Address())
 	if err != nil {
 		return common.Hash{}, err
 	}
